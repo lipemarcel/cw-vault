@@ -311,3 +311,165 @@ Apply tags based on these decision rules:
 4. **Maintain atomic notes**: One clear concept per note, but include enough context to be standalone
 5. **Link generously, but purposefully**: Create connections that add value, not just for the sake of linking
 6. **Front matter consistency**: Always include created date, relevant tags, and status if applicable
+
+---
+
+## Daily Work Log Workflow
+
+A structured system for tracking daily activities, learnings, and progress.
+
+### Purpose
+- Track daily work and accomplishments
+- Document learnings and decisions
+- Identify blockers early
+- Maintain context between days
+- Support weekly reviews and standups
+- Build a searchable work history
+
+### Location & Structure
+- **Storage**: `02-Work/Daily-Logs/`
+- **Format**: `YYYY-MM-DD.md` (e.g., `2025-10-14.md`)
+- **Template**: `05-Resources/Templates/Daily Work Log Template.md`
+- **Tags**: `#work #daily-log`
+
+### When to Use Daily Logs
+
+✅ **Use for:**
+- Daily accomplishments and tasks completed
+- PR reviews and code changes
+- Meetings and key discussions
+- Technical learnings and discoveries
+- Blockers and challenges faced
+- Tomorrow's action items
+- Standup preparation
+
+❌ **Don't use for:**
+- Long-form technical documentation → Use `01-Learning/`
+- Project planning → Use `03-Projects/`
+- Deep bug investigations → Create separate bug notes in `02-Work/`
+
+### Claude Code Integration
+
+When working with daily logs, Claude can:
+
+1. **Create logs on demand**:
+   - "Create today's daily work log"
+   - "Show me today's log"
+   - Automatically fills in date and sets up structure
+
+2. **Smart population**:
+   - "Add [activity] to today's log"
+   - "Update my log with PR reviews"
+   - Context-aware content suggestions
+
+3. **Review and summarize**:
+   - "Show me this week's daily logs"
+   - "Summarize my work this week"
+   - "Create weekly summary from daily logs"
+
+4. **Link management**:
+   - Auto-link to relevant project notes
+   - Connect to PRs and issues
+   - Reference related work notes
+
+### Automation Options
+
+See [[Daily Work Log - Automation Guide]] for detailed setup instructions:
+
+- **Option 1 (Recommended)**: Obsidian Daily Notes plugin - Native, simple, keyboard shortcut
+- **Option 2**: Templater plugin - Advanced templating with dynamic content
+- **Option 3**: Shell scripts - Full automation with Git/GitHub integration
+- **Option 4**: Periodic Notes - Weekly and monthly rollups
+- **Option 5**: Claude Code integration - Conversational, context-aware
+
+**Recommended Setup**: Hybrid approach
+1. Use Obsidian Daily Notes for quick creation (`Cmd/Ctrl + Shift + D`)
+2. Use Claude Code to intelligently populate content
+3. Weekly review and archival process
+
+### Daily Routine
+
+#### Morning (2-3 minutes)
+1. Open or create today's log
+2. Review yesterday's action items
+3. Set today's main focus and goals
+4. Link to active projects
+
+#### During Day (as needed)
+- Quick captures: Add items as you work
+- PR activity: Note reviews and merges
+- Blockers: Document immediately
+- Learnings: Capture technical insights
+
+#### End of Day (5 minutes)
+1. Fill "What I Did Today" section
+2. Document "What I Learned"
+3. List blockers and questions
+4. Create action items for tomorrow
+5. Fill standup summary (if applicable)
+
+### Weekly Review Process
+
+Every Friday or Monday:
+1. Review all daily logs from the past week
+2. Extract key accomplishments
+3. Identify patterns in blockers
+4. Move important learnings to `01-Learning/`
+5. Update [[Professional Growth Plan]] with progress
+6. Archive logs older than 30 days to `04-Archive/`
+
+### Integration with Other Workflows
+
+**Connects to**:
+- [[Professional Growth Plan]] - Track skill development over time
+- [[PayJIM - Atividades]] - Link to project tasks
+- Project notes - Reference specific features worked on
+- Bug investigation notes - Link to debugging sessions
+
+**Feeds into**:
+- Weekly summaries and retrospectives
+- Performance reviews and 1:1s
+- Learning documentation
+- Team standups
+
+### Tips for Effective Daily Logs
+
+1. **Be concise**: Bullet points over paragraphs
+2. **Be consistent**: Fill in daily, even if brief
+3. **Link liberally**: Connect to PRs, issues, project notes
+4. **Track learnings**: Capture "aha!" moments
+5. **Note blockers**: Document problems when fresh
+6. **Use sections selectively**: Not every section needs content every day
+7. **Review regularly**: Look back weekly to see progress
+
+### Example Workflow
+
+```
+User: "Create today's daily log"
+
+Claude creates:
+- File: 02-Work/Daily-Logs/2025-10-14.md
+- Filled with today's date
+- Linked to active projects (PayJIM, etc.)
+- Ready to fill in
+
+User: "Add PR review for cnp#735 to my log"
+
+Claude updates the PRs section:
+- Reviewed: PR #735 - Wallet USD support (infinitepay-cnp-monorepo)
+
+User: "What did I work on this week?"
+
+Claude reviews all daily logs from Mon-Fri:
+- Summarizes key activities
+- Lists completed PRs
+- Highlights learnings
+- Identifies recurring blockers
+```
+
+### Related Resources
+
+- [[Daily Work Log Template]] - The base template
+- [[Daily Work Log - Automation Guide]] - Detailed automation setup
+- [[Professional Growth Plan]] - Career development tracking
+- [[Book Recommendations]] - Learning resources
