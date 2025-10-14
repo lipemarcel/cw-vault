@@ -59,9 +59,9 @@ This vault includes an automated daily learning system powered by Claude AI:
 ### How It Works
 1. **GitHub Actions workflow** runs daily at 9 AM UTC (6 AM BRT)
 2. **Claude generates** a focused learning note on a random tech topic
-3. **Note lands in `00-Inbox/`** automatically
-4. **Pull Request created** for review
-5. **Merge to vault** and optionally move to `01-Learning/` after review
+3. **Note automatically commits** to `00-Inbox/` on main branch
+4. **Review new notes** and optionally move to `01-Learning/` for permanent reference
+5. **Duplicate prevention** - skips if a note on that topic already exists
 
 ### Topics Covered
 - React Server Components
@@ -120,7 +120,7 @@ tags: [meeting, cnp, feature]
 
 ### Daily Learning Notes
 
-Review daily PRs and merge to continuously build your knowledge base. Notes start in `00-Inbox/` and can be moved to `01-Learning/` if you want to keep them as permanent reference.
+New notes appear automatically in `00-Inbox/` each day. Review them and move to `01-Learning/` if you want to keep them as permanent reference.
 
 ## Resources
 
