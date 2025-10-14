@@ -172,3 +172,142 @@ This vault uses a simplified tag system for efficient organization. Tags are use
   - Folders = "where does this live?"
   - Tags = "what type of content is this?"
 - Each folder has a README explaining its purpose
+
+## Smart Note Creation Workflow
+
+When Claude creates notes in this vault, follow these intelligent decision rules:
+
+### Decision Tree for Note Creation
+
+1. **Is this a new concept being introduced?**
+   - YES → Create in `00-Inbox/` for later processing
+   - NO → Continue to step 2
+
+2. **What is the primary purpose of this note?**
+   - **Task tracking / Sprint work / Daily activities** → `02-Work/`
+   - **Long-term project / Feature initiative** → `03-Projects/`
+   - **Documentation / Learning resource** → `01-Learning/`
+   - **Code snippet / Template / Reference** → `05-Resources/`
+   - **Completed work** → `04-Archive/`
+
+3. **What is the note's lifecycle stage?**
+   - **Active development** → `02-Work/` or `03-Projects/`
+   - **Reference/Documentation** → `01-Learning/` or `05-Resources/`
+   - **Historical/Completed** → `04-Archive/`
+
+### Folder-Specific Guidelines
+
+#### `00-Inbox/` - Use for:
+- Quick captures during conversations
+- Notes that need further categorization
+- Temporary brainstorming content
+- **Action**: Move to permanent location after processing
+
+#### `01-Learning/` - Use for:
+- Repository overviews and architecture docs
+- Technology documentation and guides
+- API references and SDK documentation
+- Design patterns and best practices
+- Tutorial notes and learning paths
+- **Examples**: "CNP Monorepo Overview", "React Hooks Guide", "GraphQL Best Practices"
+
+#### `02-Work/` - Use for:
+- Sprint task tracking and daily work
+- Bug investigation notes
+- Meeting notes and discussions
+- Code review notes
+- Incident reports and troubleshooting
+- **Examples**: "PayJIM - Atividades", "Bug #1234 Investigation", "Team Sync 2025-10-14"
+
+#### `03-Projects/` - Use for:
+- Feature architecture and design docs
+- Cross-repository initiatives
+- Side projects and experiments
+- Project proposals and planning
+- **Examples**: "PayJIM Architecture", "Design System Migration Plan", "Auth Refactor Project"
+
+#### `04-Archive/` - Use for:
+- Completed features and resolved bugs
+- Historical meeting notes (older than 3 months)
+- Past incident reports
+- Deprecated documentation
+- **Action**: Only Claude should suggest archiving, user decides to move
+
+#### `05-Resources/` - Use for:
+- Code snippets and templates
+- Configuration examples
+- Cheat sheets and quick references
+- Tool setup guides
+- Bookmark collections
+- **Examples**: "React Component Templates", "Git Commands Cheat Sheet", "VSCode Shortcuts"
+
+### Smart Linking Strategy
+
+When creating notes, intelligently create links to related content:
+
+1. **Always link to**:
+   - Parent repository/project notes
+   - Related architectural documents
+   - Referenced PR or issue tracking notes
+
+2. **Create placeholder links** (notes that don't exist yet but should):
+   - Use `[[Note Name]]` format
+   - Only create placeholders for truly relevant cross-references
+   - Don't over-link to avoid clutter
+
+3. **Bidirectional linking**:
+   - When creating Note B that references Note A, add a "Related Notes" section in Note A pointing back to Note B
+   - Maintain context in both directions
+
+### Tag Selection Rules
+
+Apply tags based on these decision rules:
+
+1. **Content Type** (choose ONE):
+   - Creating documentation? → `#doc`
+   - Meeting or discussion? → `#meeting`
+   - New idea or proposal? → `#idea`
+   - Learning material? → `#learning`
+
+2. **Repository/Project** (if applicable):
+   - Related to CNP? → `#cnp`
+   - Related to Dashboard? → `#dashboard`
+   - Related to Design System? → `#design-system`
+   - Related to Receipts? → `#receipt`
+
+3. **Work Type** (if applicable):
+   - Bug-related? → `#bug`
+   - Feature work? → `#feature`
+   - Code review? → `#pr-review`
+   - Production issue? → `#incident`
+   - Debugging? → `#troubleshooting`
+
+4. **Status** (if task-oriented):
+   - Not started? → `#todo`
+   - In progress? → `#doing`
+   - Completed? → `#done`
+
+5. **Priority** (only if explicitly urgent or important):
+   - Time-sensitive? → `#urgent`
+   - High-value? → `#important`
+
+### Examples of Smart Decisions
+
+| Scenario | Folder | Tags | Reasoning |
+|----------|--------|------|-----------|
+| User shares a CSV of sprint tasks | `02-Work/` | `#cnp #feature #doing` | Active work tracking, not long-term doc |
+| Creating architecture overview for a project | `03-Projects/` | `#doc #cnp #feature` | Long-term project documentation |
+| Documenting a repository structure | `01-Learning/` | `#doc #learning #cnp` | Educational/reference material |
+| Bug investigation notes | `02-Work/` | `#bug #cnp #troubleshooting` | Active debugging work |
+| Meeting notes from team sync | `02-Work/` | `#meeting #cnp` | Daily activity documentation |
+| Code snippet for reuse | `05-Resources/` | `#doc` | Reference material template |
+| Quick idea during conversation | `00-Inbox/` | `#idea` | Needs processing later |
+
+### Workflow Automation Principles
+
+1. **Avoid creating unnecessary notes**: Don't create notes for trivial or temporary information
+2. **Consolidate related information**: If content fits in an existing note, update it instead of creating a new one
+3. **Use meaningful filenames**: Names should be descriptive and searchable
+4. **Maintain atomic notes**: One clear concept per note, but include enough context to be standalone
+5. **Link generously, but purposefully**: Create connections that add value, not just for the sake of linking
+6. **Front matter consistency**: Always include created date, relevant tags, and status if applicable
