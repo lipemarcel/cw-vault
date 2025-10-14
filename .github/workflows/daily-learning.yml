@@ -71,7 +71,18 @@ jobs:
           3. Includes actionable tips or best practices
           4. Suggests one resource for deeper learning
 
-          Format the response as a complete Markdown document with frontmatter (created date, tags).
+          IMPORTANT: Format the response EXACTLY like this example, with proper YAML frontmatter:
+
+          ---
+          created: YYYY-MM-DD
+          tags: [learning, doc, programming]
+          ---
+
+          # Topic Title
+
+          Your content here...
+
+          Use the #learning, #doc, and #programming tags, and add 1-2 more specific tags if relevant (like #react, #typescript, #nextjs, #testing, etc).
           PROMPT_END
 
           # Call Claude API
@@ -85,7 +96,7 @@ jobs:
             "max_tokens": 2048,
             "messages": [{
               "role": "user",
-              "content": "$(cat prompt.txt)\n\nTopic: ${RANDOM_TOPIC//-/ }"
+              "content": "$(cat prompt.txt)\n\nTopic: ${RANDOM_TOPIC//-/ }\nDate: ${{ steps.date.outputs.today }}"
             }]
           }
           EOF
