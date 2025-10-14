@@ -111,8 +111,8 @@ jobs:
             exit 1
           fi
 
-          # Create filename
-          FILENAME="Daily-Learning-${{ steps.date.outputs.today }}-${RANDOM_TOPIC}.md"
+          # Create filename in Inbox folder
+          FILENAME="00-Inbox/Daily-Learning-${{ steps.date.outputs.today }}-${RANDOM_TOPIC}.md"
 
           # Write file
           echo "$CONTENT" > "$FILENAME"

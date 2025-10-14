@@ -5,10 +5,22 @@ Obsidian vault for tracking learning, work notes, and technical knowledge at Clo
 **Owner:** Fellipe Marcel
 **Role:** Software Engineer I at Cloudwalk
 
-## What's Inside
+## Vault Organization
 
-### 📚 Learning Notes
-Comprehensive documentation on technologies used in InfinitePay projects:
+### 📁 Folder Structure
+
+- **00-Inbox** - Quick capture for new notes and daily learning
+- **01-Learning** - Technical knowledge base and documentation
+- **02-Work** - Day-to-day work notes, meetings, and tasks
+- **03-Projects** - Long-term initiatives and experiments
+- **04-Archive** - Completed work and historical reference
+- **05-Resources** - Templates, snippets, and reference materials
+
+Each folder includes a README explaining its purpose and workflow.
+
+### 📚 Current Learning Topics
+
+Comprehensive documentation on InfinitePay technologies:
 - Monorepo Architecture with Turborepo
 - Next.js App Router and Server Components
 - Design System Architecture
@@ -47,8 +59,9 @@ This vault includes an automated daily learning system powered by Claude AI:
 ### How It Works
 1. **GitHub Actions workflow** runs daily at 9 AM UTC (6 AM BRT)
 2. **Claude generates** a focused learning note on a random tech topic
-3. **Pull Request created** automatically for review
-4. **Merge to vault** after reviewing the content
+3. **Note lands in `00-Inbox/`** automatically
+4. **Pull Request created** for review
+5. **Merge to vault** and optionally move to `01-Learning/` after review
 
 ### Topics Covered
 - React Server Components
@@ -82,9 +95,12 @@ Get your API key from [Anthropic Console](https://console.anthropic.com/)
 ## Usage
 
 ### Creating Notes
-Use 1-3 tags per note from the categories above.
 
-Example:
+1. **Quick capture** - Create notes in `00-Inbox/`
+2. **Add tags** - Use 1-3 tags from the tag system (see CLAUDE.md)
+3. **Process regularly** - Review inbox and move to appropriate folders
+
+Example frontmatter:
 ```markdown
 ---
 created: 2025-10-14
@@ -95,8 +111,16 @@ tags: [meeting, cnp, feature]
 ...
 ```
 
+### Workflow
+
+- **Inbox** → Process daily, move to proper folders
+- **Work notes** → Archive when completed
+- **Learning notes** → Keep in Learning folder for reference
+- **Projects** → Move to Archive when finished
+
 ### Daily Learning Notes
-Review the daily PRs and merge them to continuously build your knowledge base.
+
+Review daily PRs and merge to continuously build your knowledge base. Notes start in `00-Inbox/` and can be moved to `01-Learning/` if you want to keep them as permanent reference.
 
 ## Resources
 

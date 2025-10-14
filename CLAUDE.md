@@ -18,12 +18,54 @@ This is an Obsidian vault used for personal knowledge management, covering work 
 
 ## Vault Structure
 
-- `.obsidian/` - Configuration directory containing Obsidian-specific settings
-  - `app.json` - General application settings
-  - `core-plugins.json` - Enabled/disabled core plugins configuration
-  - `workspace.json` - Current workspace layout and open files
+This vault uses a numbered folder system for clear organization and workflow:
+
+### Folders
+
+- **`00-Inbox/`** - Quick capture zone
+  - New notes and daily learning land here first
+  - Quick captures during meetings or research
+  - Process regularly and move to appropriate folders
+
+- **`01-Learning/`** - Technical knowledge base
+  - Technology deep-dives and patterns
+  - Framework and tool documentation
+  - Best practices and methodologies
+  - Curated learning resources
+
+- **`02-Work/`** - Day-to-day activities
+  - Meeting notes and discussions
+  - Bug investigations and troubleshooting
+  - Feature planning and development notes
+  - Code review notes
+  - Incident reports
+
+- **`03-Projects/`** - Long-term initiatives
+  - Side projects and experiments
+  - Personal development initiatives
+  - Learning projects and POCs
+  - Cross-repository features
+
+- **`04-Archive/`** - Historical reference
+  - Completed tasks and features
+  - Resolved bugs and incidents
+  - Past meeting notes
+  - Historical context
+
+- **`05-Resources/`** - Reference materials
+  - Code snippets and templates
+  - Useful links and bookmarks
+  - Cheat sheets and quick references
+  - Tool configurations
+
+### Configuration
+
+- `.obsidian/` - Obsidian application settings
+  - `app.json` - General settings
+  - `core-plugins.json` - Plugin configuration
+  - `workspace.json` - Workspace layout
   - `graph.json` - Graph view settings
-  - `appearance.json` - Theme and appearance settings
+  - `appearance.json` - Theme settings
 
 ## Tag System
 
@@ -111,12 +153,22 @@ This vault uses a simplified tag system for efficient organization. Tags are use
 - Leverage bidirectional linking to create connections between notes
 - Use the daily notes feature for time-based journaling
 
-### File Organization
-- Notes can be organized in folders or kept flat depending on preference
-- Use tags and links rather than deep folder structures for flexibility
-- Common folder patterns (optional):
-  - `Work/` - Work-related notes
-  - `Learning/` - Learning materials and courses
-  - `Projects/` - Project documentation
-  - `Templates/` - Note templates
-  - `Archive/` - Archived content
+### File Organization Workflow
+
+1. **Capture** - New notes start in `00-Inbox/`
+2. **Process** - Review, add proper tags, and decide destination
+3. **Organize** - Move to appropriate folder:
+   - Learning materials → `01-Learning/`
+   - Work tasks/meetings → `02-Work/`
+   - Personal projects → `03-Projects/`
+   - Reference materials → `05-Resources/`
+4. **Archive** - Completed items → `04-Archive/`
+
+### Folder + Tag Strategy
+
+- **Folders** provide physical organization and workflow stages
+- **Tags** enable cross-cutting categorization and quick search
+- Use **both** for maximum flexibility:
+  - Folders = "where does this live?"
+  - Tags = "what type of content is this?"
+- Each folder has a README explaining its purpose
