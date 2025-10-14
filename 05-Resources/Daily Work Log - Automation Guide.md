@@ -227,7 +227,80 @@ Extension of daily notes with weekly/monthly rollups.
 
 ---
 
-### Option 5: Claude Code Integration (This!)
+### Option 5: GitHub Actions Automation ⭐ FULLY AUTOMATED
+
+Automatically create daily logs every weekday morning using GitHub Actions.
+
+#### Setup Steps
+
+1. **Workflow File Already Created**
+   - Location: `.github/workflows/create-daily-log.yml`
+   - Runs Monday-Friday at 8:00 AM UTC (5:00 AM BRT)
+   - Can also be triggered manually
+
+2. **How It Works**
+   ```yaml
+   # Runs automatically every weekday morning
+   schedule:
+     - cron: '0 8 * * 1-5'  # 8 AM UTC, Mon-Fri
+
+   # Or trigger manually from GitHub Actions tab
+   workflow_dispatch:
+   ```
+
+3. **What It Does**
+   - Checks if today's log already exists
+   - Creates log from template if it doesn't exist
+   - Replaces `{{date}}` with today's date
+   - Adds day of week (Monday, Tuesday, etc.)
+   - Links to yesterday's log if it exists
+   - Commits and pushes automatically
+   - Skips if log already exists (no duplicates)
+
+4. **Manual Trigger**
+   - Go to GitHub repo → Actions tab
+   - Select "Create Daily Work Log" workflow
+   - Click "Run workflow" → "Run workflow"
+
+5. **Test Locally**
+   ```bash
+   cd ~/Documents/cw-vault
+   .github/scripts/test-daily-log-creation.sh
+   ```
+
+**Pros**:
+- ✅ Fully automated - zero manual work
+- ✅ Runs every weekday automatically
+- ✅ No local dependencies needed
+- ✅ Links to yesterday's log automatically
+- ✅ Can be manually triggered if needed
+- ✅ Prevents duplicate creation
+- ✅ Works even when computer is off
+
+**Cons**:
+- ❌ Requires GitHub repository
+- ❌ 1-2 minute delay for automation to run
+- ❌ Needs internet connection to sync
+
+#### Customization
+
+**Change Schedule**: Edit `.github/workflows/create-daily-log.yml`
+```yaml
+# Run at 6 AM UTC instead
+- cron: '0 6 * * 1-5'
+
+# Run every day including weekends
+- cron: '0 8 * * *'
+```
+
+**Change Time Zone**:
+- 8:00 AM UTC = 5:00 AM BRT (Brazil)
+- 8:00 AM UTC = 3:00 AM EST (US East Coast)
+- 8:00 AM UTC = 12:00 AM PST (US West Coast)
+
+---
+
+### Option 6: Claude Code Integration
 
 Ask Claude to create daily logs on demand.
 
@@ -264,23 +337,27 @@ Claude will:
 
 **Best of all worlds**:
 
-1. **Primary**: Use Obsidian Daily Notes plugin for quick creation
+1. **Automatic Creation**: GitHub Actions (Option 5) ⭐ NEW!
+   - Runs every weekday automatically at 5 AM BRT
+   - Creates log from template with zero manual work
+   - Links to yesterday's log automatically
+   - **Set it and forget it!**
+
+2. **Quick Access**: Obsidian Daily Notes plugin (Option 1)
    - Set keyboard shortcut: `Cmd/Ctrl + Shift + D`
-   - Template auto-fills date
+   - Opens today's log (already created by GitHub Actions)
+   - Quick navigation to daily logs
 
-2. **Enhancement**: Add Templater for advanced features
-   - Auto-link to yesterday/tomorrow
-   - Day-of-week insertion
-   - Week number tracking
-
-3. **Smart Fill**: Use Claude Code to populate content
-   - "Fill today's log with what I worked on"
+3. **Smart Fill**: Use Claude Code (Option 6) for content
+   - "Add [activity] to today's log"
+   - "Update my log with PR reviews"
    - Claude can parse PR activity, commits, etc.
    - Intelligent summarization
 
-4. **Review**: Weekly script to archive old logs
-   - Moves logs older than 30 days to `04-Archive/`
-   - Creates weekly summaries
+4. **Review**: Weekly review process
+   - Review all daily logs from the week
+   - Extract key learnings → Move to `01-Learning/`
+   - Archive logs older than 30 days to `04-Archive/`
 
 ---
 
@@ -348,10 +425,11 @@ Create script to inject this into daily log template.
 
 ## Next Steps
 
-1. **Start Simple**: Use Obsidian Daily Notes (Option 1)
-2. **Enhance**: Add Templater when comfortable (Option 2)
-3. **Automate**: Use Claude Code for intelligent filling (Option 5)
-4. **Advanced**: Add Git/GitHub integration when needed
+1. **Enable GitHub Actions**: Commit and push the workflow (already created!)
+2. **Test It**: Manually trigger the workflow from GitHub Actions tab
+3. **Set Up Quick Access**: Configure Obsidian Daily Notes keyboard shortcut
+4. **Start Using**: Tomorrow morning, your log will be automatically created!
+5. **Fill Content**: Use Claude Code for intelligent content population
 
 ---
 
