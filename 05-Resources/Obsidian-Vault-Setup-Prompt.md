@@ -736,6 +736,147 @@ jobs:
 2. Template file exists at specified path
 3. Workflow permissions set to allow writes
 
+### Inbox Processing Automation
+
+Create `.github/workflows/process-inbox.yml` for automatic note organization:
+
+```yaml
+name: Process Inbox Notes
+
+on:
+  schedule:
+    # Run every Friday at 4 PM BRT (7 PM UTC)
+    - cron: '0 19 * * 5'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  process-inbox:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Process inbox notes
+        id: process
+        run: |
+          MOVED_COUNT=0
+          MOVED_NOTES=""
+
+          # Check if inbox directory exists
+          if [ ! -d "00-Inbox" ] || [ -z "$(find 00-Inbox -maxdepth 1 -name '*.md' -not -name 'README.md')" ]; then
+            echo "No notes to process"
+            echo "moved_count=0" >> $GITHUB_OUTPUT
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Process each markdown file in inbox
+          for file in 00-Inbox/*.md; do
+            # Skip README
+            if [ "$file" = "00-Inbox/README.md" ] || [ "$file" = "00-Inbox/*.md" ]; then
+              continue
+            fi
+
+            BASENAME=$(basename "$file")
+            echo "Processing: $BASENAME"
+
+            # Extract tags from file
+            TAGS=$(grep -E '^tags:|#[a-z-]+' "$file" | tr '[],' ' ' | grep -oE '#[a-z-]+' | sort -u)
+
+            # Determine destination based on tags
+            DEST_FOLDER=""
+
+            # Work-related tags → 02-Work/
+            if echo "$TAGS" | grep -qE '#(meeting|bug|feature|pr-review|incident|troubleshooting|work)'; then
+              DEST_FOLDER="02-Work"
+
+            # Learning/documentation tags → 01-Learning/ or 03-Projects/
+            elif echo "$TAGS" | grep -qE '#(learning|doc)'; then
+              if echo "$TAGS" | grep -qE '#(cnp|dashboard|design-system|receipt)'; then
+                # Architecture docs → Projects
+                if grep -qiE '(architecture|design|implementation)' "$file"; then
+                  DEST_FOLDER="03-Projects"
+                else
+                  DEST_FOLDER="01-Learning"
+                fi
+              else
+                DEST_FOLDER="01-Learning"
+              fi
+
+            # Completed items → Archive
+            elif echo "$TAGS" | grep -qE '#done'; then
+              DEST_FOLDER="04-Archive"
+
+            # No clear destination → keep in inbox
+            else
+              echo "  → Keeping in inbox (no clear tags)"
+              continue
+            fi
+
+            # Move file
+            if [ -n "$DEST_FOLDER" ] && [ "$DEST_FOLDER" != "00-Inbox" ]; then
+              mkdir -p "$DEST_FOLDER"
+              mv "$file" "$DEST_FOLDER/"
+              echo "  → Moved to $DEST_FOLDER/"
+              MOVED_COUNT=$((MOVED_COUNT + 1))
+              MOVED_NOTES="${MOVED_NOTES}- ${BASENAME} → ${DEST_FOLDER}/\n"
+            fi
+          done
+
+          echo "moved_count=$MOVED_COUNT" >> $GITHUB_OUTPUT
+          echo -e "moved_notes<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$MOVED_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          if [ $MOVED_COUNT -gt 0 ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.process.outputs.has_changes == 'true'
+        run: |
+          git add -A
+          git commit -m "Process inbox: moved ${{ steps.process.outputs.moved_count }} note(s)
+
+          ${{ steps.process.outputs.moved_notes }}
+
+          🤖 Automated by GitHub Actions"
+          git push
+
+      - name: Log result
+        run: |
+          if [ "${{ steps.process.outputs.has_changes }}" == "true" ]; then
+            echo "✅ Processed ${{ steps.process.outputs.moved_count }} note(s)"
+          else
+            echo "✅ No notes to process"
+          fi
+```
+
+**How it works**:
+- Runs every Friday at 4 PM (or manually via workflow_dispatch)
+- Analyzes tags in each note's frontmatter and content
+- Moves notes to appropriate folders based on tag patterns
+- Commits changes directly to main branch
+- Skips notes without clear destination tags
+
+**Tag-based routing**:
+- `#meeting`, `#bug`, `#feature`, `#pr-review` → `02-Work/`
+- `#learning`, `#doc` → `01-Learning/` (or `03-Projects/` if architecture)
+- `#done` → `04-Archive/`
+- No clear tags → Stays in inbox
+
 ---
 
 ## Part 7: Initial Content Examples

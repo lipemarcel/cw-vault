@@ -1,0 +1,135 @@
+name: Process Inbox Notes
+
+on:
+  schedule:
+    # Run every Friday at 4 PM BRT (7 PM UTC)
+    - cron: '0 19 * * 5'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  process-inbox:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Process inbox notes
+        id: process
+        run: |
+          MOVED_COUNT=0
+          MOVED_NOTES=""
+
+          # Check if inbox directory exists and has markdown files
+          if [ ! -d "00-Inbox" ] || [ -z "$(find 00-Inbox -maxdepth 1 -name '*.md' -not -name 'README.md')" ]; then
+            echo "No notes to process in inbox"
+            echo "moved_count=0" >> $GITHUB_OUTPUT
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Process each markdown file in inbox (excluding README)
+          for file in 00-Inbox/*.md; do
+            # Skip if it's README or if no files found
+            if [ "$file" = "00-Inbox/README.md" ] || [ "$file" = "00-Inbox/*.md" ]; then
+              continue
+            fi
+
+            BASENAME=$(basename "$file")
+            echo "Processing: $BASENAME"
+
+            # Extract tags from frontmatter and content
+            TAGS=$(grep -E '^tags:|#[a-z-]+' "$file" | tr '[],' ' ' | grep -oE '#[a-z-]+' | sort -u)
+
+            # Determine destination folder based on tags
+            DEST_FOLDER=""
+
+            # Priority 1: Check for work-related tags
+            if echo "$TAGS" | grep -qE '#(meeting|bug|feature|pr-review|incident|troubleshooting|deployment|work)'; then
+              DEST_FOLDER="02-Work"
+
+            # Priority 2: Check for learning/documentation tags
+            elif echo "$TAGS" | grep -qE '#(learning|doc)'; then
+              # If it has project/repo tags, it might be project docs
+              if echo "$TAGS" | grep -qE '#(cnp|dashboard|design-system|receipt)'; then
+                # Check if it's architecture or implementation docs
+                if grep -qiE '(architecture|design|implementation|overview|guide)' "$file"; then
+                  DEST_FOLDER="03-Projects"
+                else
+                  DEST_FOLDER="01-Learning"
+                fi
+              else
+                DEST_FOLDER="01-Learning"
+              fi
+
+            # Priority 3: Check for idea tag (could be project or work)
+            elif echo "$TAGS" | grep -qE '#idea'; then
+              # If it mentions specific implementation or has repo tags, it's likely a project
+              if echo "$TAGS" | grep -qE '#(cnp|dashboard|design-system|receipt)'; then
+                DEST_FOLDER="03-Projects"
+              else
+                DEST_FOLDER="00-Inbox" # Keep ideas in inbox until further developed
+              fi
+
+            # Priority 4: Check for done status - move to archive
+            elif echo "$TAGS" | grep -qE '#done'; then
+              DEST_FOLDER="04-Archive"
+
+            # Priority 5: If no clear tags, keep in inbox
+            else
+              echo "  → No clear destination tags, keeping in inbox"
+              continue
+            fi
+
+            # Move file if destination determined and different from inbox
+            if [ -n "$DEST_FOLDER" ] && [ "$DEST_FOLDER" != "00-Inbox" ]; then
+              mkdir -p "$DEST_FOLDER"
+              mv "$file" "$DEST_FOLDER/"
+              echo "  → Moved to $DEST_FOLDER/"
+              MOVED_COUNT=$((MOVED_COUNT + 1))
+              MOVED_NOTES="${MOVED_NOTES}- ${BASENAME} → ${DEST_FOLDER}/\n"
+            fi
+          done
+
+          echo "moved_count=$MOVED_COUNT" >> $GITHUB_OUTPUT
+          echo -e "moved_notes<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$MOVED_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          if [ $MOVED_COUNT -gt 0 ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.process.outputs.has_changes == 'true'
+        run: |
+          git add -A
+          git commit -m "Process inbox: moved ${{ steps.process.outputs.moved_count }} note(s)
+
+          Automatically organized notes from inbox based on tags:
+
+          ${{ steps.process.outputs.moved_notes }}
+
+          🤖 Automated by GitHub Actions"
+
+          git push
+
+      - name: Log result
+        run: |
+          if [ "${{ steps.process.outputs.has_changes }}" == "true" ]; then
+            echo "✅ Processed and moved ${{ steps.process.outputs.moved_count }} note(s) from inbox"
+          else
+            echo "✅ No notes to process in inbox"
+          fi
