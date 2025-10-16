@@ -48,20 +48,24 @@ jobs:
             BASENAME=$(basename "$file")
             echo "Processing: $BASENAME"
 
-            # Extract tags from frontmatter and content
-            TAGS=$(grep -E '^tags:|#[a-z-]+' "$file" | tr '[],' ' ' | grep -oE '#[a-z-]+' | sort -u)
+            # Extract tags from YAML frontmatter (tags: [tag1, tag2]) and hashtags in content (#tag)
+            YAML_TAGS=$(grep -E '^tags:' "$file" | sed 's/tags://; s/\[//g; s/\]//g; s/,/ /g' | tr ' ' '\n' | grep -v '^$' | sort -u)
+            HASHTAGS=$(grep -oE '#[a-z-][-a-z]*' "$file" | sed 's/#//' | sort -u)
+            TAGS=$(echo -e "$YAML_TAGS\n$HASHTAGS" | grep -v '^$' | sort -u | tr '\n' '|')
+
+            echo "  Tags found: $TAGS"
 
             # Determine destination folder based on tags
             DEST_FOLDER=""
 
             # Priority 1: Check for work-related tags
-            if echo "$TAGS" | grep -qE '#(meeting|bug|feature|pr-review|incident|troubleshooting|deployment|work)'; then
+            if echo "$TAGS" | grep -qE '(meeting|bug|feature|pr-review|incident|troubleshooting|deployment|work)'; then
               DEST_FOLDER="02-Work"
 
             # Priority 2: Check for learning/documentation tags
-            elif echo "$TAGS" | grep -qE '#(learning|doc)'; then
+            elif echo "$TAGS" | grep -qE '(learning|doc)'; then
               # If it has project/repo tags, it might be project docs
-              if echo "$TAGS" | grep -qE '#(cnp|dashboard|design-system|receipt)'; then
+              if echo "$TAGS" | grep -qE '(cnp|dashboard|design-system|receipt)'; then
                 # Check if it's architecture or implementation docs
                 if grep -qiE '(architecture|design|implementation|overview|guide)' "$file"; then
                   DEST_FOLDER="03-Projects"
@@ -73,16 +77,16 @@ jobs:
               fi
 
             # Priority 3: Check for idea tag (could be project or work)
-            elif echo "$TAGS" | grep -qE '#idea'; then
+            elif echo "$TAGS" | grep -qE 'idea'; then
               # If it mentions specific implementation or has repo tags, it's likely a project
-              if echo "$TAGS" | grep -qE '#(cnp|dashboard|design-system|receipt)'; then
+              if echo "$TAGS" | grep -qE '(cnp|dashboard|design-system|receipt)'; then
                 DEST_FOLDER="03-Projects"
               else
                 DEST_FOLDER="00-Inbox" # Keep ideas in inbox until further developed
               fi
 
             # Priority 4: Check for done status - move to archive
-            elif echo "$TAGS" | grep -qE '#done'; then
+            elif echo "$TAGS" | grep -qE 'done'; then
               DEST_FOLDER="04-Archive"
 
             # Priority 5: If no clear tags, keep in inbox
