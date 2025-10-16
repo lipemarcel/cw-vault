@@ -52,27 +52,38 @@ Efficient tag system for organization (see CLAUDE.md for full details):
 ### Priority
 `#urgent` `#important`
 
-## Daily Learning
+## Automation Features
 
-This vault includes an automated daily learning system powered by Claude AI:
+This vault includes several automated workflows powered by GitHub Actions:
 
-### How It Works
+### Daily Learning Notes
 1. **GitHub Actions workflow** runs daily at 9 AM UTC (6 AM BRT)
 2. **Claude generates** a focused learning note on a random tech topic
 3. **Note automatically commits** to `00-Inbox/` on main branch
-4. **Review new notes** and optionally move to `01-Learning/` for permanent reference
-5. **Duplicate prevention** - skips if a note on that topic already exists
+4. **Duplicate prevention** - skips if a note on that topic already exists
 
-### Topics Covered
-- React Server Components
-- TypeScript advanced types
-- Next.js optimization
-- Testing best practices
-- Monorepo patterns
-- And more...
+**Topics Covered**: React Server Components, TypeScript, Next.js optimization, Testing, Monorepo patterns, and more.
 
-### Manual Trigger
-You can also trigger the workflow manually from the GitHub Actions tab.
+### Daily Work Logs
+1. **Automated creation** every weekday at 8 AM UTC (5 AM BRT)
+2. **Creates log from template** in `02-Work/Daily-Logs/`
+3. **Date-based naming** (YYYY-MM-DD.md)
+4. **Prevents duplicates** - skips if log already exists
+
+### Inbox Processing (NEW)
+1. **Runs every Friday** at 7 PM UTC (4 PM BRT)
+2. **Analyzes tags** in inbox notes automatically
+3. **Moves notes** to appropriate folders based on tags
+4. **Commits changes** directly to main branch
+
+**Tag-based routing**:
+- `#meeting`, `#bug`, `#feature`, `#pr-review` → `02-Work/`
+- `#learning`, `#doc` → `01-Learning/` or `03-Projects/`
+- `#done` → `04-Archive/`
+- No clear tags → Stays in inbox
+
+### Manual Triggers
+All workflows can be triggered manually from the GitHub Actions tab.
 
 ## Setup
 
@@ -113,14 +124,18 @@ tags: [meeting, cnp, feature]
 
 ### Workflow
 
-- **Inbox** → Process daily, move to proper folders
-- **Work notes** → Archive when completed
+- **Inbox** → Automated processing every Friday (or manual with proper tags)
+- **Work notes** → Archive when completed (use `#done` tag)
 - **Learning notes** → Keep in Learning folder for reference
 - **Projects** → Move to Archive when finished
+- **Daily logs** → Created automatically each weekday morning
 
-### Daily Learning Notes
+### Notes on Automation
 
-New notes appear automatically in `00-Inbox/` each day. Review them and move to `01-Learning/` if you want to keep them as permanent reference.
+- **Daily learning notes** appear in `00-Inbox/` each day at 9 AM UTC
+- **Daily work logs** are created in `02-Work/Daily-Logs/` each weekday at 8 AM UTC
+- **Inbox processing** runs every Friday at 7 PM UTC - notes with proper tags are moved automatically
+- **Manual processing** is still available - you can move notes anytime or trigger workflows manually
 
 ## Resources
 
@@ -130,4 +145,16 @@ New notes appear automatically in `00-Inbox/` each day. Review them and move to 
 
 ---
 
-🤖 This vault is enhanced with AI-powered daily learning via Claude
+## GitHub Actions Workflows
+
+This vault uses three automated workflows:
+
+1. **`daily-learning.yml`** - Generates learning notes with Claude AI (daily at 9 AM UTC)
+2. **`create-daily-log.yml`** - Creates daily work logs (weekdays at 8 AM UTC)
+3. **`process-inbox.yml`** - Organizes inbox notes by tags (Fridays at 7 PM UTC)
+
+All workflows can be found in `.github/workflows/` and can be triggered manually.
+
+---
+
+🤖 This vault is enhanced with AI-powered automation and intelligent organization
