@@ -69,10 +69,12 @@ jobs:
           # Check if yesterday's log exists
           if [ -f "02-Work/Daily-Logs/${{ steps.yesterday.outputs.yesterday }}.md" ]; then
             # Add link to yesterday in the standup section
-            sed -i "s|\*\*Yesterday\*\*: N/A (First daily log)|\*\*Yesterday\*\*: See \[\[${{ steps.yesterday.outputs.yesterday }}\]\]|g" \
+            sed -i "/^\*\*Yesterday\*\*:$/a See [[${YESTERDAY_DATE}]]" \
               "02-Work/Daily-Logs/${{ steps.date.outputs.today }}.md"
             echo "Linked to yesterday's log"
           fi
+        env:
+          YESTERDAY_DATE: ${{ steps.yesterday.outputs.yesterday }}
 
       - name: Commit and push
         if: steps.check.outputs.exists == 'false'
