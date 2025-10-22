@@ -1,56 +1,234 @@
-# CW Vault - Personal Knowledge Base
+<div align="center">
 
-> 🤖 AI-powered knowledge management system for software engineers
+# 🧠 CW Vault - Personal Knowledge Base
 
-Obsidian vault for tracking learning, work notes, and technical knowledge at Cloudwalk.
+### AI-Powered Knowledge Management for Software Engineers
 
-**Owner:** Fellipe Marcel  
-**Role:** Software Engineer I at Cloudwalk
+[![Obsidian](https://img.shields.io/badge/Obsidian-483699?style=for-the-badge&logo=obsidian&logoColor=white)](https://obsidian.md/)
+[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions)
+[![Claude AI](https://img.shields.io/badge/Claude_AI-000000?style=for-the-badge&logo=anthropic&logoColor=white)](https://claude.ai/)
+[![Markdown](https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white)](https://www.markdownguide.org/)
+
+**Obsidian vault for tracking learning, work notes, and technical knowledge at Cloudwalk**
+
+👤 **Fellipe Marcel** | 💼 Software Engineer I at Cloudwalk
+
+[📖 Read the Docs](#-documentation--resources) • [🚀 Quick Start](#-quick-start) • [🤖 Use with Claude](#-claude-code-integration) • [📥 Replicate This Vault](#-how-to-replicate-this-vault)
 
 ---
 
+</div>
+
+<br>
+
 ## ⚡ Quick Start
 
-**First time using this vault?**
+<table>
+<tr>
+<td width="50%">
 
-1. **Morning routine**: `git pull origin main` to sync with automated changes
-2. **Open today's log**: Press `Cmd/Ctrl + O` → Type today's date
-3. **Capture work**: Fill in your daily log as you work
-4. **Ask Claude for help**: "Update my daily log with [activity]"
-5. **End of day**: `git pull && git push origin main`
+### 🌅 Daily Routine
 
-**Your first week:**
-- Days 1-5: Fill in daily logs (practice the workflow)
-- Friday: Review your week, update quarterly tracker
-- Learn to use tags for organization (see Tag System below)
+**Morning:**
+```bash
+git pull origin main
+```
+
+**During Work:**
+- Open today's log
+- Fill in as you work
+- Commit frequently
+
+**End of Day:**
+```bash
+git pull && git push origin main
+```
+
+</td>
+<td width="50%">
+
+### 📅 Your First Week
+
+**Days 1-5:**
+- ✅ Fill daily logs
+- ✅ Practice Git workflow
+- ✅ Learn tag system
+
+**Friday:**
+- ✅ Review your week
+- ✅ Update quarterly tracker
+- ✅ Process inbox
+
+</td>
+</tr>
+</table>
+
+**🎯 Pro Tips:**
+- Press `Cmd/Ctrl + O` to quickly open any note
+- Ask Claude: `"Update my daily log with [activity]"`
+- Keep tags simple: 1-3 per note
+
+---
+
+## 📥 How to Replicate This Vault
+
+<div align="center">
+
+### 🎉 Want Your Own AI-Powered Knowledge Base?
+
+**It takes just 5 minutes with Claude Code!**
+
+</div>
+
+<table>
+<tr>
+<td width="50%">
+
+### 🤖 Method 1: Use Claude Code (Recommended)
+
+**Step 1:** Open Claude Code (Cursor AI Assistant)
+
+**Step 2:** Copy and use this prompt:
+
+```
+"Help me set up an AI-powered knowledge management 
+system in Obsidian like the one in:
+
+https://github.com/lipemarcel/cw-vault
+
+Use the setup guide in:
+05-Resources/Obsidian-Vault-Setup-Prompt.md
+
+Customize it for:
+- My role: [Your Role]
+- My repos: [Your Repositories]
+- My review criteria: [Your Company's Pillars]
+
+Create the complete structure with automation."
+```
+
+**Step 3:** Claude will ask clarifying questions and create everything automatically!
+
+</td>
+<td width="50%">
+
+### 📋 Method 2: Manual Setup
+
+**Step 1:** Read the complete setup guide:
+- [`05-Resources/Obsidian-Vault-Setup-Prompt.md`](./05-Resources/Obsidian-Vault-Setup-Prompt.md)
+
+**Step 2:** Follow the 13-part guide:
+1. Create folder structure
+2. Set up templates
+3. Configure CLAUDE.md
+4. Add automation guides
+5. Set up GitHub Actions (optional)
+6. And more...
+
+**Step 3:** Customize for your needs
+
+**Time:** ~30-60 minutes
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+
+### 🎁 What You'll Get
+
+| Feature | What It Does | Automation Level |
+|---------|--------------|------------------|
+| 📝 Daily Work Logs | Auto-created every weekday | ✅ Fully Automated |
+| 📚 Learning Notes | AI-generated daily | ✅ Fully Automated |
+| 📥 Inbox Processing | Auto-organize by tags | ✅ Fully Automated |
+| 🤖 Claude Integration | AI assistant for everything | ✅ Built-in |
+| 📊 Quarterly Reviews | Generate from tracked work | 🔄 Semi-Automated |
+| 🔄 Git Workflows | Conflict resolution & sync | 🔄 Semi-Automated |
+
+</div>
+
+> 💡 **Pro Tip:** Start with Claude Code method for instant setup, then customize later!  
+> 📖 **Full Guide:** See [`Obsidian-Vault-Setup-Prompt.md`](./05-Resources/Obsidian-Vault-Setup-Prompt.md) for detailed instructions
 
 ---
 
 ## 🎯 Why Use This System?
 
-This vault solves common problems for busy engineers:
+<div align="center">
 
-✅ **Never forget what you worked on** - Daily logs capture everything automatically  
-✅ **Quarterly reviews in 30 minutes** - Continuous tracking makes reviews effortless  
-✅ **Find anything instantly** - Tag system + search = powerful knowledge retrieval  
-✅ **Learn consistently** - Automated learning notes keep you growing  
-✅ **No manual busywork** - GitHub Actions + AI handle repetitive tasks  
-✅ **Version controlled** - Git tracks everything, never lose work  
+### 💡 Solve Common Engineering Problems
 
-**Time savings**: ~2-3 hours per quarter on performance reviews + better daily productivity
+</div>
 
-## Vault Organization
+| Problem | Solution | Benefit |
+|---------|----------|---------|
+| 😰 "What did I do last week?" | **Daily Logs** capture everything automatically | Never forget your work |
+| ⏰ "Quarterly reviews take forever" | **Continuous tracking** + AI generation | Reviews in 30 minutes |
+| 🔍 "Where did I document X?" | **Tag system** + powerful search | Find anything instantly |
+| 📚 "No time to learn" | **Automated learning notes** daily | Consistent growth |
+| 🔁 "Too much repetitive work" | **GitHub Actions** + AI automation | Focus on coding |
+| 💾 "I lost my notes" | **Git version control** for everything | Never lose work |
 
-### 📁 Folder Structure
+<div align="center">
 
-- **00-Inbox** - Quick capture for new notes and daily learning
-- **01-Learning** - Technical knowledge base and documentation
-- **02-Work** - Day-to-day work notes, meetings, and tasks
-- **03-Projects** - Long-term initiatives and experiments
-- **04-Archive** - Completed work and historical reference
-- **05-Resources** - Templates, snippets, and reference materials
+⏱️ **Time Savings:** ~2-3 hours per quarter on reviews + improved daily productivity  
+🚀 **ROI:** Setup once, benefit forever
 
-Each folder includes a README explaining its purpose and workflow.
+</div>
+
+## 📂 Vault Organization
+
+<table>
+<tr>
+<td width="33%">
+
+### 📥 Capture
+**00-Inbox**  
+Quick notes  
+Daily learning  
+*→ Process weekly*
+
+**01-Learning**  
+Tech docs  
+Best practices  
+*→ Permanent ref*
+
+</td>
+<td width="33%">
+
+### 💼 Work
+**02-Work**  
+Daily logs  
+Meetings  
+Bug tracking  
+*→ Active work*
+
+**03-Projects**  
+Long-term docs  
+Architecture  
+*→ Big initiatives*
+
+</td>
+<td width="33%">
+
+### 📚 Storage
+**04-Archive**  
+Completed work  
+Old notes  
+*→ Historical*
+
+**05-Resources**  
+Templates  
+Guides  
+*→ Reusable*
+
+</td>
+</tr>
+</table>
+
+> 💡 **Workflow:** Capture → Process → Organize → Archive  
+> Each folder has a detailed README with usage guidelines
 
 ### 📚 Current Learning Topics
 
@@ -67,57 +245,150 @@ Comprehensive documentation on InfinitePay technologies:
 - [infinitepay-ds-web](https://github.com/cloudwalk/infinitepay-ds-web)
 - [infinitepay-receipt-js](https://github.com/cloudwalk/infinitepay-receipt-js)
 
-## Tag System
+## 🏷️ Tag System
 
-Efficient tag system for organization (see CLAUDE.md for full details):
+<div align="center">
 
-### Content Type
-`#meeting` `#idea` `#doc` `#learning`
+**Simple, powerful, and decision-free organization**
 
-### Status
-`#todo` `#doing` `#done`
+</div>
 
-### Repository
-`#cnp` `#dashboard` `#design-system` `#receipt`
+<table>
+<tr>
+<td width="20%">
 
-### Work Type
-`#bug` `#feature` `#incident` `#troubleshooting` `#pr-review` `#deployment`
+**📝 Content Type**
 
-### Priority
-`#urgent` `#important`
+`#meeting`  
+`#idea`  
+`#doc`  
+`#learning`
 
-## Automation Features
+</td>
+<td width="20%">
 
-This vault includes several automated workflows powered by GitHub Actions:
+**📊 Status**
 
-### Daily Learning Notes
-1. **GitHub Actions workflow** runs daily at 9 AM UTC (6 AM BRT)
-2. **Claude generates** a focused learning note on a random tech topic
-3. **Note automatically commits** to `00-Inbox/` on main branch
-4. **Duplicate prevention** - skips if a note on that topic already exists
+`#todo`  
+`#doing`  
+`#done`
 
-**Topics Covered**: React Server Components, TypeScript, Next.js optimization, Testing, Monorepo patterns, and more.
+</td>
+<td width="20%">
 
-### Daily Work Logs
-1. **Automated creation** every weekday at 8 AM UTC (5 AM BRT)
-2. **Creates log from template** in `02-Work/Daily-Logs/`
-3. **Date-based naming** (YYYY-MM-DD.md)
-4. **Prevents duplicates** - skips if log already exists
+**🔧 Work Type**
 
-### Inbox Processing (NEW)
-1. **Runs every Friday** at 7 PM UTC (4 PM BRT)
-2. **Analyzes tags** in inbox notes automatically
-3. **Moves notes** to appropriate folders based on tags
-4. **Commits changes** directly to main branch
+`#bug`  
+`#feature`  
+`#pr-review`  
+`#incident`  
+`#troubleshooting`
 
-**Tag-based routing**:
-- `#meeting`, `#bug`, `#feature`, `#pr-review` → `02-Work/`
-- `#learning`, `#doc` → `01-Learning/` or `03-Projects/`
-- `#done` → `04-Archive/`
-- No clear tags → Stays in inbox
+</td>
+<td width="20%">
 
-### Manual Triggers
-All workflows can be triggered manually from the GitHub Actions tab.
+**📦 Repository**
+
+`#cnp`  
+`#dashboard`  
+`#design-system`  
+`#receipt`
+
+</td>
+<td width="20%">
+
+**⚡ Priority**
+
+`#urgent`  
+`#important`
+
+*(use sparingly)*
+
+</td>
+</tr>
+</table>
+
+**💡 Usage Rules:**
+- ✅ Use 1-3 tags per note (keep it simple!)
+- ✅ Choose ONE from each relevant category
+- ❌ Don't over-tag or create new tags without purpose
+
+**🎯 Examples:**
+- `#meeting #cnp #feature` - Team sync about new feature
+- `#bug #dashboard #doing` - Active bug investigation  
+- `#doc #learning` - Technical documentation
+
+> 📖 See [CLAUDE.md](./CLAUDE.md) for complete tagging guidelines and decision trees
+
+## ⚙️ Automation Features
+
+<div align="center">
+
+### 🤖 Three Powerful Automations Running 24/7
+
+</div>
+
+<table>
+<tr>
+<td width="33%">
+
+### 📚 Daily Learning
+
+**🕐 Schedule:** 9 AM UTC (6 AM BRT)  
+**📅 Frequency:** Every day
+
+**What it does:**
+- Claude AI generates focused learning note
+- Random tech topic selection
+- Auto-commits to `00-Inbox/`
+- Duplicate prevention
+
+**Topics:** React, TypeScript, Next.js, Testing, Architecture, etc.
+
+</td>
+<td width="33%">
+
+### 📝 Daily Work Logs
+
+**🕐 Schedule:** 8 AM UTC (5 AM BRT)  
+**📅 Frequency:** Weekdays only
+
+**What it does:**
+- Creates log from template
+- Date-based naming
+- Saved to `02-Work/Daily-Logs/`
+- Prevents duplicates
+
+**Format:** `YYYY-MM-DD.md`
+
+</td>
+<td width="33%">
+
+### 📥 Inbox Processing
+
+**🕐 Schedule:** 7 PM UTC (4 PM BRT)  
+**📅 Frequency:** Every Friday
+
+**What it does:**
+- Analyzes note tags
+- Routes to correct folders
+- Auto-commits changes
+- Keeps inbox clean
+
+**Routing Rules:**
+- Work tags → `02-Work/`
+- Learning → `01-Learning/`
+- Done → `04-Archive/`
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+
+**🎛️ All workflows can be triggered manually from GitHub Actions tab**
+
+</div>
 
 ## Setup
 
@@ -175,48 +446,111 @@ tags: [meeting, cnp, feature]
 
 ## 🤖 Claude Code Integration
 
-This vault is designed to work seamlessly with Claude Code (AI assistant).
+<div align="center">
 
-### What Claude Can Do
+### Your AI Assistant Knows Everything About This Vault
 
-**Daily Work Logs:**
-```
-"Create today's daily work log"
-"Add PR review for cnp#760 to my log"
-"Show me this week's daily logs"
-"Summarize my work this week"
-```
+**Claude reads `CLAUDE.md` and understands your entire workflow**
 
-**Quarterly Reviews:**
-```
-"Update my quarterly tracker with this week's work"
-"Generate my Q4 self-evaluation"
-"What achievements am I missing for [pillar]?"
-```
+</div>
 
-**Git Operations:**
-```
-"Help me resolve this merge conflict"
-"Check git status and help me commit"
-"Explain this git error: [error message]"
-```
+<table>
+<tr>
+<td width="25%">
 
-**Note Management:**
+### 📝 Daily Logs
+
 ```
-"Create a new learning note about [topic]"
-"Move completed work to archive"
-"Find all notes tagged with #bug"
+"Create today's log"
+
+"Add PR review 
+for cnp#760"
+
+"Show this 
+week's logs"
+
+"Summarize 
+my week"
 ```
 
-### How It Works
+</td>
+<td width="25%">
 
-1. **Claude reads CLAUDE.md** - Understands vault structure and rules
-2. **Intelligent placement** - Creates notes in correct folders
-3. **Consistent tagging** - Applies tags following guidelines
-4. **Smart linking** - Connects related notes automatically
-5. **Context-aware** - Knows your projects and repositories
+### 📊 Reviews
 
-**See full documentation**: [CLAUDE.md](./CLAUDE.md)
+```
+"Update quarterly 
+tracker"
+
+"Generate Q4 
+evaluation"
+
+"What achievements 
+am I missing?"
+
+"Compare to 
+last quarter"
+```
+
+</td>
+<td width="25%">
+
+### 🔧 Git Help
+
+```
+"Resolve merge 
+conflict"
+
+"Check status 
+and commit"
+
+"Explain this 
+git error"
+
+"Help me 
+sync with remote"
+```
+
+</td>
+<td width="25%">
+
+### 📚 Notes
+
+```
+"Create learning 
+note about X"
+
+"Move completed 
+to archive"
+
+"Find all 
+#bug notes"
+
+"Link related 
+notes"
+```
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+
+### ✨ Claude's Superpowers
+
+| Capability | What It Does |
+|------------|-------------|
+| 🧠 **Context-Aware** | Knows your projects, repos, and workflow |
+| 📁 **Smart Placement** | Creates notes in correct folders automatically |
+| 🏷️ **Consistent Tagging** | Applies tags following your guidelines |
+| 🔗 **Auto-Linking** | Connects related notes bidirectionally |
+| 🔀 **Conflict Resolution** | Intelligently merges Git conflicts |
+| 📝 **Content Generation** | Writes evaluations from your tracked work |
+
+> 💡 **Just ask naturally** - Claude understands conversational requests  
+> 📖 **Full Documentation:** [CLAUDE.md](./CLAUDE.md)
+
+</div>
 
 ---
 
@@ -355,9 +689,91 @@ Claude understands this vault's structure and can guide you through any workflow
 
 <div align="center">
 
-🤖 **This vault is enhanced with AI-powered automation and intelligent organization**
+<br>
 
-Built with ❤️ using [Obsidian](https://obsidian.md/) • [GitHub Actions](https://github.com/features/actions) • [Claude AI](https://claude.ai/)
+## 🌟 Star This Repo If You Found It Useful!
+
+<br>
+
+### 🤝 Contributing
+
+Have ideas for improvements? Found a bug? Want to share your setup?
+
+**Open an issue** or **submit a PR** - contributions are welcome!
+
+<br>
+
+---
+
+<br>
+
+### 📬 Questions?
+
+💬 **Ask Claude Code:** "Help me with [your question]"  
+📧 **Open an Issue:** [GitHub Issues](https://github.com/lipemarcel/cw-vault/issues)  
+📖 **Read the Docs:** See documentation links above
+
+<br>
+
+---
+
+<br>
+
+<table>
+<tr>
+<td align="center" width="33%">
+
+### 🛠️ Built With
+
+[Obsidian](https://obsidian.md/)  
+Knowledge Management
+
+</td>
+<td align="center" width="33%">
+
+### 🤖 Powered By
+
+[Claude AI](https://claude.ai/)  
+Intelligent Automation
+
+</td>
+<td align="center" width="33%">
+
+### ⚙️ Automated With
+
+[GitHub Actions](https://github.com/features/actions)  
+CI/CD Workflows
+
+</td>
+</tr>
+</table>
+
+<br>
+
+---
+
+<br>
+
+### 📊 Vault Stats
+
+**📂 Structure:** 6 organized folders  
+**🏷️ Tags:** 20+ predefined tags  
+**⚙️ Automations:** 3 GitHub Actions workflows  
+**📝 Templates:** 2 professional templates  
+**📚 Guides:** 5 comprehensive documentation files  
+**🤖 AI Integration:** Full Claude Code support  
+
+<br>
+
+**Made with ❤️ by [Fellipe Marcel](https://github.com/lipemarcel)**
+
+⭐ **If this helped you, consider starring the repo!**
+
+<br>
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/lipemarcel/cw-vault/graphs/commit-activity)
 
 *Last Updated: 2025-10-22*
 
