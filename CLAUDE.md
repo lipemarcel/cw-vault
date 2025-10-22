@@ -473,3 +473,165 @@ Claude reviews all daily logs from Mon-Fri:
 - [[Daily Work Log - Automation Guide]] - Detailed automation setup
 - [[Professional Growth Plan]] - Career development tracking
 - [[Book Recommendations]] - Learning resources
+
+---
+
+## Git Workflow Integration
+
+This vault uses Git for version control with automated GitHub Actions that create commits daily. Claude Code can assist with Git operations and conflict resolution.
+
+### Daily Git Workflow
+
+**Morning routine:**
+1. Always start with `git pull origin main` to sync with remote
+2. This prevents conflicts with automated commits from GitHub Actions
+
+**During work:**
+1. Check changes: `git status` and `git diff`
+2. Stage files: `git add <file>` or `git add -A`
+3. Commit frequently: `git commit -m "descriptive message"`
+
+**End of day:**
+1. Pull first: `git pull origin main`
+2. Resolve any conflicts (see below)
+3. Push: `git push origin main`
+
+### Claude Code Assistance with Git
+
+Claude can help with various Git tasks:
+
+**Checking status and changes:**
+```
+"What files have I changed today?"
+"Show me the diff for my daily log"
+"Check the git status"
+```
+
+**Resolving merge conflicts:**
+```
+"Help me resolve this merge conflict"
+"I have a conflict in 2025-10-22.md, can you merge both versions?"
+"Explain what this git conflict means"
+```
+
+**Committing and pushing:**
+```
+"Help me commit and push my changes"
+"Generate a commit message for these changes"
+"Check if I need to pull before pushing"
+```
+
+**Understanding errors:**
+```
+"Explain this git error: [error message]"
+"My branch has diverged, what should I do?"
+"Help me with git [specific issue]"
+```
+
+### How Claude Resolves Conflicts
+
+When you ask Claude to help with merge conflicts:
+
+1. **Claude reads the conflicted file** to see both versions
+2. **Analyzes the content** to understand what each version contains
+3. **Intelligently merges** by combining valuable information from both
+4. **Writes the resolved version** removing conflict markers
+5. **Stages the file** with `git add`
+6. **Commits the merge** with a descriptive message
+7. **Pushes to remote** if requested
+
+**Example interaction:**
+```
+User: "Help me resolve the merge conflict in today's daily log"
+
+Claude:
+1. Reads 02-Work/Daily-Logs/2025-10-22.md
+2. Sees local version has PR review notes
+3. Sees remote version has automated template updates
+4. Merges both sections together
+5. Removes <<<<<<, =======, >>>>>> markers
+6. Stages: git add 02-Work/Daily-Logs/2025-10-22.md
+7. Commits: git commit -m "Merge remote changes and resolve conflict"
+8. Pushes: git push origin main
+```
+
+### Preventing Conflicts with Automation
+
+**Automation schedule:**
+- **Daily logs**: Created at 8 AM UTC (5 AM BRT) on weekdays
+- **Learning notes**: Created at 9 AM UTC (6 AM BRT) daily
+- **Inbox processing**: Friday at 7 PM UTC (4 PM BRT)
+
+**Best practices:**
+1. **Pull before starting work** each day
+2. **Commit frequently** (smaller commits = easier merges)
+3. **Pull before pushing** at end of day
+4. **Let automation create files**, then edit them
+5. **Ask Claude for help** when conflicts occur
+
+### Common Git Issues and Claude's Role
+
+**Issue: "Your branch has diverged"**
+- **Meaning**: Both local and remote have different commits
+- **Ask Claude**: "My branch has diverged, help me merge"
+- **Claude will**: Check status, suggest merge or rebase, help resolve
+
+**Issue: "Merge conflict in [file]"**
+- **Meaning**: Git can't automatically merge changes
+- **Ask Claude**: "Help me resolve the conflict in [file]"
+- **Claude will**: Read both versions, intelligently merge, stage, commit
+
+**Issue: "Cannot push, remote has changes"**
+- **Meaning**: Need to pull first
+- **Ask Claude**: "Help me sync with remote"
+- **Claude will**: Pull, resolve conflicts, then push
+
+### Claude's Git Permissions
+
+**Claude CAN do:**
+- ✅ `git status`, `git diff`, `git log` (read operations)
+- ✅ `git add` (stage files)
+- ✅ `git commit` (create commits)
+- ✅ `git push` (push to remote)
+- ✅ `git pull` (pull from remote)
+- ✅ Read and resolve merge conflicts
+- ✅ Write resolved files and stage them
+
+**Claude will ASK first before:**
+- ⚠️ `git push --force` (force push)
+- ⚠️ `git reset --hard` (destructive reset)
+- ⚠️ Changing git config
+- ⚠️ Deleting branches
+- ⚠️ Any irreversible operations
+
+**Claude will NOT do without explicit request:**
+- ❌ Force push to main/master
+- ❌ Hard reset that loses changes
+- ❌ Skip commit hooks
+- ❌ Modify git history destructively
+
+### Full Documentation
+
+For comprehensive Git workflows and troubleshooting:
+- See [[Git Workflow and Troubleshooting Guide]] in `05-Resources/`
+- Covers: daily workflows, conflict resolution, automation issues, recovery procedures
+- Includes: command cheat sheet, emergency recovery, best practices
+
+### Integration with Other Workflows
+
+**Daily logs:**
+- Pull before opening today's log
+- Actions may have created it already
+- Claude can merge your edits with template
+
+**Quarterly reviews:**
+- Commit achievement tracker updates frequently
+- Claude can help stage and commit changes
+- Prevents losing work if conflicts occur
+
+**Learning notes:**
+- Actions creates notes in `00-Inbox/` daily
+- Pull in morning to see new notes
+- Move to appropriate folders as needed
+
+---

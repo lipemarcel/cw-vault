@@ -137,10 +137,38 @@ tags: [meeting, cnp, feature]
 - **Inbox processing** runs every Friday at 7 PM UTC - notes with proper tags are moved automatically
 - **Manual processing** is still available - you can move notes anytime or trigger workflows manually
 
+## Git Workflows
+
+This vault uses Git for version control with automated GitHub Actions creating commits daily. This can occasionally lead to merge conflicts.
+
+### Daily Git Routine
+1. **Morning**: `git pull origin main` before starting work
+2. **During work**: Commit frequently with descriptive messages
+3. **End of day**: `git pull` then `git push origin main`
+
+### When Conflicts Happen
+- Don't panic! Conflicts are normal with automated workflows
+- See [[Git Workflow and Troubleshooting Guide]] for step-by-step resolution
+- Ask Claude: "Help me resolve this merge conflict"
+
+### Common Commands
+```bash
+git status              # Check current state
+git pull origin main    # Sync with remote
+git add <file>          # Stage changes
+git commit -m "msg"     # Commit changes
+git push origin main    # Push to remote
+```
+
+**Full documentation**: See `05-Resources/Git-Workflow-and-Troubleshooting-Guide.md`
+
+---
+
 ## Resources
 
 - [Obsidian Documentation](https://help.obsidian.md/)
 - [CLAUDE.md](./CLAUDE.md) - Full vault configuration
+- [Git Workflow and Troubleshooting Guide](./05-Resources/Git-Workflow-and-Troubleshooting-Guide.md) - Git workflows and conflict resolution
 - [GitHub Actions Docs](https://docs.github.com/en/actions)
 
 ---
