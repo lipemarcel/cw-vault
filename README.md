@@ -1,9 +1,43 @@
 # CW Vault - Personal Knowledge Base
 
+> 🤖 AI-powered knowledge management system for software engineers
+
 Obsidian vault for tracking learning, work notes, and technical knowledge at Cloudwalk.
 
-**Owner:** Fellipe Marcel
+**Owner:** Fellipe Marcel  
 **Role:** Software Engineer I at Cloudwalk
+
+---
+
+## ⚡ Quick Start
+
+**First time using this vault?**
+
+1. **Morning routine**: `git pull origin main` to sync with automated changes
+2. **Open today's log**: Press `Cmd/Ctrl + O` → Type today's date
+3. **Capture work**: Fill in your daily log as you work
+4. **Ask Claude for help**: "Update my daily log with [activity]"
+5. **End of day**: `git pull && git push origin main`
+
+**Your first week:**
+- Days 1-5: Fill in daily logs (practice the workflow)
+- Friday: Review your week, update quarterly tracker
+- Learn to use tags for organization (see Tag System below)
+
+---
+
+## 🎯 Why Use This System?
+
+This vault solves common problems for busy engineers:
+
+✅ **Never forget what you worked on** - Daily logs capture everything automatically  
+✅ **Quarterly reviews in 30 minutes** - Continuous tracking makes reviews effortless  
+✅ **Find anything instantly** - Tag system + search = powerful knowledge retrieval  
+✅ **Learn consistently** - Automated learning notes keep you growing  
+✅ **No manual busywork** - GitHub Actions + AI handle repetitive tasks  
+✅ **Version controlled** - Git tracks everything, never lose work  
+
+**Time savings**: ~2-3 hours per quarter on performance reviews + better daily productivity
 
 ## Vault Organization
 
@@ -137,6 +171,55 @@ tags: [meeting, cnp, feature]
 - **Inbox processing** runs every Friday at 7 PM UTC - notes with proper tags are moved automatically
 - **Manual processing** is still available - you can move notes anytime or trigger workflows manually
 
+---
+
+## 🤖 Claude Code Integration
+
+This vault is designed to work seamlessly with Claude Code (AI assistant).
+
+### What Claude Can Do
+
+**Daily Work Logs:**
+```
+"Create today's daily work log"
+"Add PR review for cnp#760 to my log"
+"Show me this week's daily logs"
+"Summarize my work this week"
+```
+
+**Quarterly Reviews:**
+```
+"Update my quarterly tracker with this week's work"
+"Generate my Q4 self-evaluation"
+"What achievements am I missing for [pillar]?"
+```
+
+**Git Operations:**
+```
+"Help me resolve this merge conflict"
+"Check git status and help me commit"
+"Explain this git error: [error message]"
+```
+
+**Note Management:**
+```
+"Create a new learning note about [topic]"
+"Move completed work to archive"
+"Find all notes tagged with #bug"
+```
+
+### How It Works
+
+1. **Claude reads CLAUDE.md** - Understands vault structure and rules
+2. **Intelligent placement** - Creates notes in correct folders
+3. **Consistent tagging** - Applies tags following guidelines
+4. **Smart linking** - Connects related notes automatically
+5. **Context-aware** - Knows your projects and repositories
+
+**See full documentation**: [CLAUDE.md](./CLAUDE.md)
+
+---
+
 ## Git Workflows
 
 This vault uses Git for version control with automated GitHub Actions creating commits daily. This can occasionally lead to merge conflicts.
@@ -164,12 +247,22 @@ git push origin main    # Push to remote
 
 ---
 
-## Resources
+## 📚 Documentation & Resources
 
-- [Obsidian Documentation](https://help.obsidian.md/)
-- [CLAUDE.md](./CLAUDE.md) - Full vault configuration
-- [Git Workflow and Troubleshooting Guide](./05-Resources/Git-Workflow-and-Troubleshooting-Guide.md) - Git workflows and conflict resolution
-- [GitHub Actions Docs](https://docs.github.com/en/actions)
+### Vault Documentation
+- **[CLAUDE.md](./CLAUDE.md)** - Complete vault configuration and AI integration guide
+- **[Git Workflow Guide](./05-Resources/Git-Workflow-and-Troubleshooting-Guide.md)** - Git workflows, conflict resolution, and troubleshooting
+
+### Automation Guides
+- **[Daily Work Log - Automation Guide](./05-Resources/Daily%20Work%20Log%20-%20Automation%20Guide.md)** - Multiple options for automating daily logs
+- **[Quarterly Review Automation](./05-Resources/Quarterly-Review-Automation-Guide.md)** - Effortless performance reviews with AI
+- **[Obsidian Vault Setup Prompt](./05-Resources/Obsidian-Vault-Setup-Prompt.md)** - Guide for setting up similar vaults
+
+### External Resources
+- [Obsidian Documentation](https://help.obsidian.md/) - Official Obsidian docs
+- [GitHub Actions Docs](https://docs.github.com/en/actions) - GitHub automation
+- [Markdown Guide](https://www.markdownguide.org/) - Markdown syntax reference
+- [Pro Git Book](https://git-scm.com/book/en/v2) - Comprehensive Git guide
 
 ---
 
@@ -185,4 +278,87 @@ All workflows can be found in `.github/workflows/` and can be triggered manually
 
 ---
 
-🤖 This vault is enhanced with AI-powered automation and intelligent organization
+## 🆘 Getting Help
+
+### Common Questions
+
+**"I have a merge conflict, what do I do?"**
+→ See [Git Workflow Guide](./05-Resources/Git-Workflow-and-Troubleshooting-Guide.md) or ask Claude: "Help me resolve this merge conflict"
+
+**"How do I create a daily log?"**
+→ It's created automatically each morning! Or ask Claude: "Create today's daily work log"
+
+**"Where should I put this note?"**
+→ See [CLAUDE.md](./CLAUDE.md) for folder decision tree, or ask Claude to create it for you
+
+**"How do I prepare for quarterly reviews?"**
+→ See [Quarterly Review Automation Guide](./05-Resources/Quarterly-Review-Automation-Guide.md)
+
+**"What tags should I use?"**
+→ See Tag System section above, keep it simple (1-3 tags per note)
+
+### Ask Claude Code
+
+For any vault-related questions:
+```
+"How do I [task]?"
+"What's the best way to [goal]?"
+"Help me understand [concept]"
+"I'm having trouble with [issue]"
+```
+
+Claude understands this vault's structure and can guide you through any workflow.
+
+---
+
+## 📊 Vault Statistics
+
+**Current Status:**
+- ✅ Automated daily work logs
+- ✅ AI-generated learning notes
+- ✅ Automated inbox processing
+- ✅ Git conflict resolution support
+- ✅ Quarterly review automation
+- ✅ Claude Code integration
+
+**Maintenance:**
+- Daily logs created: Automatic (Mon-Fri)
+- Learning notes added: Automatic (Daily)
+- Inbox processed: Automatic (Fridays)
+- Git syncs: Manual (2x per day recommended)
+
+---
+
+## 🎉 What's Next?
+
+**Week 1-2: Learn the Basics**
+- Use daily logs consistently
+- Practice Git workflows
+- Learn tag system
+
+**Week 3-4: Optimize Your Flow**
+- Set up Obsidian shortcuts
+- Create custom templates
+- Explore Claude integration
+
+**Month 2+: Advanced Usage**
+- Build personal knowledge base
+- Create project documentation
+- Prepare first quarterly review
+
+**Continuous Improvement:**
+- Review and refine workflows
+- Add custom automations
+- Share learnings with team
+
+---
+
+<div align="center">
+
+🤖 **This vault is enhanced with AI-powered automation and intelligent organization**
+
+Built with ❤️ using [Obsidian](https://obsidian.md/) • [GitHub Actions](https://github.com/features/actions) • [Claude AI](https://claude.ai/)
+
+*Last Updated: 2025-10-22*
+
+</div>
