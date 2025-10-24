@@ -1,60 +1,54 @@
 ---
-created: 2025-10-14
-tags: [learning, doc, programming, devops, cicd]
+created: 2025-10-23
+tags: [learning, doc, programming, devops, ci-cd]
 ---
 
-# Understanding Trunk-Based Development in CI/CD
+# CI/CD Strategies for Next.js Applications
 
-Trunk-based development (TBD) is a source control branching strategy that encourages developers to merge small, frequent updates directly into the main branch (trunk). This approach aligns well with modern CI/CD practices and can significantly improve team velocity and code quality.
+Continuous Integration and Continuous Deployment (CI/CD) is crucial for modern web applications. Here's a focused look at implementing CI/CD for Next.js applications.
 
-## Key Concepts
+## Key Concept
+CI/CD pipelines automate the process of testing, building, and deploying applications. For Next.js applications, this typically involves:
+- Running tests
+- Static analysis (linting/type checking)
+- Building the application
+- Deploying to staging/production environments
 
-- Short-lived feature branches (< 2 days)
-- Frequent integrations to main branch
-- Feature flags for incomplete features
-- Automated testing at every commit
+## Practical Example
+```yaml
+# GitHub Actions workflow for Next.js
+name: Next.js CI/CD
+on:
+  push:
+    branches: [ main ]
 
-## Practical Example with Next.js
-
-```typescript
-// Feature flag implementation in Next.js
-const FeatureFlag = ({ flag, children }) => {
-  const isEnabled = useFeatureFlag(flag);
-  
-  return isEnabled ? children : null;
-};
-
-// Usage in a component
-const NewFeature = () => {
-  return (
-    <FeatureFlag flag="new-payment-flow">
-      <PaymentComponent />
-    </FeatureFlag>
-  );
-};
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Type Check
+        run: npm run type-check
+      - name: Run Tests
+        run: npm test
+      - name: Build
+        run: npm run build
 ```
 
 ## Best Practices
+1. Always include type checking in your pipeline
+2. Use environment-specific variables for different deployment stages
+3. Implement branch protection rules to enforce CI checks
+4. Cache dependencies to speed up builds
+5. Add monitoring and error reporting
 
-1. Keep branches small and focused
-2. Use feature flags for incomplete features
-3. Maintain comprehensive automated tests
-4. Perform code reviews quickly
-5. Deploy to production frequently (ideally daily)
+## Recommended Resource
+"Continuous Delivery with Next.js" on Vercel's documentation (https://nextjs.org/docs/deployment) provides detailed insights into deployment strategies and optimizations specific to Next.js applications.
 
-## Implementation Tips
-
-- Start with a robust automated testing strategy
-- Use feature flags for gradual rollouts
-- Implement automated code quality checks
-- Set up branch protection rules
-- Configure automated deployment pipelines
-
-## Deeper Learning
-
-Recommended resource: "Modern Frontend CI/CD Architecture" by Nader Dabit
-Available at: https://dev.to/dabit3/modern-frontend-ci-cd-architecture-5890
-
-This comprehensive guide covers practical implementations of CI/CD pipelines specifically for Next.js applications, including deployment strategies and testing approaches.
-
-Remember: The goal is to reduce integration pain by merging code more frequently and in smaller chunks.
+Remember: A well-configured CI/CD pipeline can catch errors early and ensure consistent deployments, ultimately improving development velocity and code quality.
