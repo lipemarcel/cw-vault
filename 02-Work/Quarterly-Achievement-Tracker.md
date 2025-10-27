@@ -98,6 +98,32 @@ status: active
 - All 3 PRs merged to production on October 21
 - Applied dark mode class to `document.documentElement` for better Tailwind integration
 
+**Date**: 2025-10-22
+**Category**: Results
+**What**: PayJIM branding and payment method expansion
+**Impact**: Completed branding alignment and expanded payment method support for US market
+**Evidence**: [PR #755](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/755)
+- Updated merchant avatar fallback icon to Jim logo
+- Added Discover card support (in addition to Amex, Visa, Mastercard)
+- Configured origin-based card brand logic (pay_jim specific configuration)
+- Fixed payment footer icon sizes for improved layout consistency
+- Updated payment-engine tests for Discover card validation
+- Reordered payment method icons in PaymentFooter for better UX
+
+**Date**: 2025-10-23
+**Category**: Results
+**What**: PayJIM UX polish - Merchant handle display and root page redirect
+**Impact**: Improved user experience with cleaner merchant handle display and proper navigation
+**Evidence**: [PR #775](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/775), [PR #776](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/776)
+- **PR #775**: Removed dollar sign prefix from merchant handles (shows `jim_monahan-store` instead of `$jim_monahan-store`)
+- Created `formatMerchantHandle` utility function with optional `showPrefix` parameter
+- Updated MerchantHeader component with optional prop for backward compatibility
+- Added 6 comprehensive test cases for formatMerchantHandle utility
+- **PR #776**: Implemented redirect from pay-jim root page to www.jim.com
+- Used Next.js 15's `redirect()` function for server-side redirect (HTTP 307)
+- Fixed "Not Found" page issue on root route
+- Both PRs merged successfully on October 23
+
 #### November 2025
 -
 
@@ -189,6 +215,26 @@ status: active
 - Eliminated manual meta tag configuration in layouts
 - Simplified icon management across different devices (favicon vs Apple touch icon)
 
+**Date**: 2025-10-23
+**Category**: Innovation
+**What**: Flexible utility function pattern for multi-origin support
+**Impact**: Created reusable pattern for handling different UX requirements across origins
+**Evidence**: [PR #775](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/775)
+- Created `formatMerchantHandle` utility with optional `showPrefix` parameter
+- Enables same component to serve different origins (pay_jim without "$", others with "$")
+- Pattern maintains backward compatibility while enabling origin-specific UX
+- Can be applied to other multi-origin features going forward
+
+**Date**: 2025-10-23
+**Category**: Innovation
+**What**: Next.js 15 server-side redirect pattern
+**Impact**: Leveraged modern Next.js features for better SEO and UX
+**Evidence**: [PR #776](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/776)
+- Used Next.js 15's `redirect()` function for server-side redirects
+- Redirect happens before page renders (fast, SEO-friendly)
+- HTTP 307 status code preserves original request method
+- Better alternative to client-side redirects or custom not-found pages
+
 #### November 2025
 -
 
@@ -274,6 +320,26 @@ status: active
 - Coordinated merging of 3 related PRs in logical order
 - Kept all feature branches synchronized with main
 - Successfully deployed all changes to production without issues
+
+**Date**: 2025-10-22
+**Category**: Ownership
+**What**: Comprehensive testing across multi-origin payment configurations
+**Impact**: Ensured reliability of payment methods across different payment applications
+**Evidence**: [PR #755](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/755)
+- Updated payment-engine tests to handle Discover card validation
+- Configured origin-specific card brand logic for pay_jim vs other apps
+- Maintained test coverage across all payment scenarios
+- Proactively moved Discover from unknown to valid card numbers in tests
+
+**Date**: 2025-10-23
+**Category**: Ownership
+**What**: Backward compatibility with flexible component design
+**Impact**: Enabled new functionality without breaking existing use cases
+**Evidence**: [PR #775](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/775)
+- Added optional `showPrefix` prop to MerchantHeader component
+- Ensured all existing apps (invoice, payment-link, etc.) continue working with defaults
+- Created 6 comprehensive test cases for new utility function
+- Documented behavior differences across origins for future maintainers
 
 #### November 2025
 -
