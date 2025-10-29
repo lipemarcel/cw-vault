@@ -23,11 +23,6 @@ type: daily-log
 ### Code & Features
 -
 
-### PRs & Reviews
-- **Opened**:
-- **Reviewed**:
-- **Merged**:
-
 ### Bugs & Fixes
 -
 
@@ -107,13 +102,3 @@ type: daily-log
 |      |            |            |
 
 **Total Productive Hours**:
-
----
-
-## Mood & Energy
-
-**Energy Level**: ⚡⚡⚡⚡⚡ (1-5)
-
-**Focus Quality**: 🎯🎯🎯🎯🎯 (1-5)
-
-**Notes**:

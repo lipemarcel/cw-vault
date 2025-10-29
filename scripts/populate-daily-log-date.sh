@@ -92,7 +92,7 @@ add_section() {
 }
 
 # Fetch PRs created on the specified date
-add_section "🚀 PRs Opened"
+PRS_OPENED_CONTENT=""
 for REPO in "${REPOS[@]}"; do
   echo -e "${BLUE}  Checking PRs opened in ${REPO}...${NC}"
 
@@ -103,37 +103,65 @@ for REPO in "${REPOS[@]}"; do
     --jq '.[] | "- **PR #\(.number)**: \(.title) (\(.state)) - [View PR](\(.url))"' 2>/dev/null || echo "")
 
   if [ -n "$PRS" ]; then
-    echo "**${REPO}**:" >> "${ACTIVITY_FILE}"
-    echo "$PRS" >> "${ACTIVITY_FILE}"
-    echo "" >> "${ACTIVITY_FILE}"
+    PRS_OPENED_CONTENT="${PRS_OPENED_CONTENT}**${REPO}**:\n${PRS}\n\n"
     FOUND_ACTIVITY=true
     echo -e "${GREEN}  ✓ Found PRs${NC}"
   fi
 done
 
+if [ -n "$PRS_OPENED_CONTENT" ]; then
+  add_section "🚀 PRs Opened"
+  echo -e "$PRS_OPENED_CONTENT" >> "${ACTIVITY_FILE}"
+fi
+
 # Fetch PR reviews done on the specified date
-add_section "👀 PRs Reviewed"
+PRS_REVIEWED_CONTENT=""
 for REPO in "${REPOS[@]}"; do
   echo -e "${BLUE}  Checking PR reviews in ${REPO}...${NC}"
 
-  # Get PRs where you left reviews using search (limited by date range)
-  REVIEWS=$(gh search prs --repo "${ORG}/${REPO}" \
+  # Get recent PRs where you were requested as reviewer or left reviews
+  PR_NUMBERS=$(gh search prs --repo "${ORG}/${REPO}" \
     --reviewed-by @me \
-    --json number,title,url \
-    --limit 50 2>/dev/null | \
-    jq -r --arg today "${TODAY}" '.[] | "- **PR #\(.number)**: \(.title) - [View PR](\(.url))"' 2>/dev/null || echo "")
+    --json number \
+    --limit 100 2>/dev/null | jq -r '.[].number' 2>/dev/null || echo "")
 
-  if [ -n "$REVIEWS" ]; then
-    echo "**${REPO}**:" >> "${ACTIVITY_FILE}"
-    echo "$REVIEWS" >> "${ACTIVITY_FILE}"
-    echo "" >> "${ACTIVITY_FILE}"
+  REPO_REVIEWS=""
+  for PR_NUM in $PR_NUMBERS; do
+    if [ -z "$PR_NUM" ]; then
+      continue
+    fi
+
+    # Check if any review was submitted on the specified date
+    REVIEW_ON_DATE=$(gh api "repos/${ORG}/${REPO}/pulls/${PR_NUM}/reviews" 2>/dev/null | \
+      jq -r --arg today "${TODAY}" --arg user "lipemarcel" \
+      '.[] | select(.user.login == $user) | select(.submitted_at | startswith($today)) | .submitted_at' 2>/dev/null | head -1 || echo "")
+
+    if [ -n "$REVIEW_ON_DATE" ]; then
+      # Get PR details
+      PR_INFO=$(gh pr view ${PR_NUM} --repo "${ORG}/${REPO}" \
+        --json number,title,url \
+        --jq '"- **PR #\(.number)**: \(.title) - [View PR](\(.url))"' 2>/dev/null || echo "")
+
+      if [ -n "$PR_INFO" ]; then
+        REPO_REVIEWS="${REPO_REVIEWS}${PR_INFO}\n"
+      fi
+    fi
+  done
+
+  if [ -n "$REPO_REVIEWS" ]; then
+    PRS_REVIEWED_CONTENT="${PRS_REVIEWED_CONTENT}**${REPO}**:\n${REPO_REVIEWS}\n"
     FOUND_ACTIVITY=true
     echo -e "${GREEN}  ✓ Found reviews${NC}"
   fi
 done
 
+if [ -n "$PRS_REVIEWED_CONTENT" ]; then
+  add_section "👀 PRs Reviewed"
+  echo -e "$PRS_REVIEWED_CONTENT" >> "${ACTIVITY_FILE}"
+fi
+
 # Fetch PRs merged on the specified date
-add_section "✅ PRs Merged"
+PRS_MERGED_CONTENT=""
 for REPO in "${REPOS[@]}"; do
   echo -e "${BLUE}  Checking merged PRs in ${REPO}...${NC}"
 
@@ -145,16 +173,19 @@ for REPO in "${REPOS[@]}"; do
     --jq '.[] | "- **PR #\(.number)**: \(.title) - [View PR](\(.url))"' 2>/dev/null || echo "")
 
   if [ -n "$MERGED" ]; then
-    echo "**${REPO}**:" >> "${ACTIVITY_FILE}"
-    echo "$MERGED" >> "${ACTIVITY_FILE}"
-    echo "" >> "${ACTIVITY_FILE}"
+    PRS_MERGED_CONTENT="${PRS_MERGED_CONTENT}**${REPO}**:\n${MERGED}\n\n"
     FOUND_ACTIVITY=true
     echo -e "${GREEN}  ✓ Found merged PRs${NC}"
   fi
 done
 
+if [ -n "$PRS_MERGED_CONTENT" ]; then
+  add_section "✅ PRs Merged"
+  echo -e "$PRS_MERGED_CONTENT" >> "${ACTIVITY_FILE}"
+fi
+
 # Fetch commits pushed on the specified date
-add_section "📝 Commits"
+COMMITS_CONTENT=""
 for REPO in "${REPOS[@]}"; do
   echo -e "${BLUE}  Checking commits in ${REPO}...${NC}"
 
@@ -162,13 +193,16 @@ for REPO in "${REPOS[@]}"; do
     --jq '.[] | select(.commit.author.date | startswith("'${TODAY}'")) | select(.author.login == "lipemarcel") | "- `\(.sha[0:7])` - \(.commit.message | split("\n")[0])"' 2>/dev/null | head -10 || echo "")
 
   if [ -n "$COMMITS" ]; then
-    echo "**${REPO}**:" >> "${ACTIVITY_FILE}"
-    echo "$COMMITS" >> "${ACTIVITY_FILE}"
-    echo "" >> "${ACTIVITY_FILE}"
+    COMMITS_CONTENT="${COMMITS_CONTENT}**${REPO}**:\n${COMMITS}\n\n"
     FOUND_ACTIVITY=true
     echo -e "${GREEN}  ✓ Found commits${NC}"
   fi
 done
+
+if [ -n "$COMMITS_CONTENT" ]; then
+  add_section "📝 Commits"
+  echo -e "$COMMITS_CONTENT" >> "${ACTIVITY_FILE}"
+fi
 
 echo ""
 
