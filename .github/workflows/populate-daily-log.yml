@@ -1,0 +1,215 @@
+name: Populate Daily Log with GitHub Activity
+
+on:
+  schedule:
+    # Run at 6:00 PM BRT (9:00 PM UTC) every weekday to capture the day's activity
+    - cron: '0 21 * * 1-5'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  populate-daily-log:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get current date
+        id: date
+        run: |
+          echo "today=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "day_name=$(date +'%A')" >> $GITHUB_OUTPUT
+
+      - name: Check if daily log exists
+        id: check
+        run: |
+          if [ -f "02-Work/Daily-Logs/${{ steps.date.outputs.today }}.md" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Daily log for ${{ steps.date.outputs.today }} exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Daily log for ${{ steps.date.outputs.today }} does not exist, will create it"
+          fi
+
+      - name: Create daily log if it doesn't exist
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          mkdir -p "02-Work/Daily-Logs"
+          cat "05-Resources/Templates/Daily Work Log Template.md" | \
+            sed "s/{{date}}/${{ steps.date.outputs.today }}/g" | \
+            sed "s/# Daily Work Log - {{date}}/# Daily Work Log - ${{ steps.date.outputs.today }} (${{ steps.date.outputs.day_name }})/g" | \
+            sed "s/created: {{date}}/created: ${{ steps.date.outputs.today }}/g" \
+            > "02-Work/Daily-Logs/${{ steps.date.outputs.today }}.md"
+          echo "Created daily log for ${{ steps.date.outputs.today }}"
+
+      - name: Fetch GitHub Activity
+        id: activity
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TODAY: ${{ steps.date.outputs.today }}
+        run: |
+          # Create a temporary file for activity
+          ACTIVITY_FILE=$(mktemp)
+
+          # Organizations and repositories to check
+          ORG="cloudwalk"
+          REPOS=(
+            "infinitepay-cnp-monorepo"
+            "infinitepay-dashboard-js"
+            "infinitepay-ds-web"
+            "infinitepay-receipt-js"
+          )
+
+          # Initialize sections
+          echo "## GitHub Activity for ${TODAY}" > "${ACTIVITY_FILE}"
+          echo "" >> "${ACTIVITY_FILE}"
+
+          # Track if we found any activity
+          FOUND_ACTIVITY=false
+
+          # Fetch PRs created today
+          echo "### 🚀 PRs Opened" >> "${ACTIVITY_FILE}"
+          for REPO in "${REPOS[@]}"; do
+            PRS=$(gh pr list --repo "${ORG}/${REPO}" \
+              --author lipemarcel \
+              --search "created:${TODAY}" \
+              --json number,title,url,state \
+              --jq '.[] | "- **PR #\(.number)**: \(.title) (\(.state)) - [View PR](\(.url))"' 2>/dev/null || echo "")
+
+            if [ -n "$PRS" ]; then
+              echo "**${REPO}**:" >> "${ACTIVITY_FILE}"
+              echo "$PRS" >> "${ACTIVITY_FILE}"
+              echo "" >> "${ACTIVITY_FILE}"
+              FOUND_ACTIVITY=true
+            fi
+          done
+
+          # Fetch PR reviews done today
+          echo "### 👀 PRs Reviewed" >> "${ACTIVITY_FILE}"
+          for REPO in "${REPOS[@]}"; do
+            # Get PRs where you left reviews using search
+            REVIEWS=$(gh search prs --repo "${ORG}/${REPO}" \
+              --reviewed-by @me \
+              --json number,title,url \
+              --limit 50 2>/dev/null | \
+              jq -r '.[] | "- **PR #\(.number)**: \(.title) - [View PR](\(.url))"' 2>/dev/null || echo "")
+
+            if [ -n "$REVIEWS" ]; then
+              echo "**${REPO}**:" >> "${ACTIVITY_FILE}"
+              echo "$REVIEWS" >> "${ACTIVITY_FILE}"
+              echo "" >> "${ACTIVITY_FILE}"
+              FOUND_ACTIVITY=true
+            fi
+          done
+
+          # Fetch PRs merged today (where user is author)
+          echo "### ✅ PRs Merged" >> "${ACTIVITY_FILE}"
+          for REPO in "${REPOS[@]}"; do
+            MERGED=$(gh pr list --repo "${ORG}/${REPO}" \
+              --author lipemarcel \
+              --state merged \
+              --search "merged:${TODAY}" \
+              --json number,title,url \
+              --jq '.[] | "- **PR #\(.number)**: \(.title) - [View PR](\(.url))"' 2>/dev/null || echo "")
+
+            if [ -n "$MERGED" ]; then
+              echo "**${REPO}**:" >> "${ACTIVITY_FILE}"
+              echo "$MERGED" >> "${ACTIVITY_FILE}"
+              echo "" >> "${ACTIVITY_FILE}"
+              FOUND_ACTIVITY=true
+            fi
+          done
+
+          # Fetch commits pushed today
+          echo "### 📝 Commits" >> "${ACTIVITY_FILE}"
+          for REPO in "${REPOS[@]}"; do
+            COMMITS=$(gh api repos/${ORG}/${REPO}/commits \
+              --jq '.[] | select(.commit.author.date | startswith("'${TODAY}'")) | select(.author.login == "lipemarcel") | "- `\(.sha[0:7])` - \(.commit.message | split("\n")[0])"' 2>/dev/null || echo "")
+
+            if [ -n "$COMMITS" ]; then
+              echo "**${REPO}**:" >> "${ACTIVITY_FILE}"
+              echo "$COMMITS" >> "${ACTIVITY_FILE}"
+              echo "" >> "${ACTIVITY_FILE}"
+              FOUND_ACTIVITY=true
+            fi
+          done
+
+          # Save activity file path
+          echo "activity_file=${ACTIVITY_FILE}" >> $GITHUB_OUTPUT
+          echo "found_activity=${FOUND_ACTIVITY}" >> $GITHUB_OUTPUT
+
+      - name: Update Daily Log
+        if: steps.activity.outputs.found_activity == 'true'
+        env:
+          ACTIVITY_FILE: ${{ steps.activity.outputs.activity_file }}
+          TODAY: ${{ steps.date.outputs.today }}
+        run: |
+          DAILY_LOG="02-Work/Daily-Logs/${TODAY}.md"
+
+          # Check if activity section already exists
+          if grep -q "## GitHub Activity for ${TODAY}" "${DAILY_LOG}"; then
+            echo "Activity section already exists, skipping update"
+            exit 0
+          fi
+
+          # Insert activity before the "## 🧠 What I Learned" section
+          # Create temporary file
+          TEMP_FILE=$(mktemp)
+
+          # Split the file and insert activity
+          awk '
+            /^## 🧠 What I Learned/ {
+              # Print activity content
+              system("cat '"${ACTIVITY_FILE}"'")
+              print ""
+              print "---"
+              print ""
+            }
+            { print }
+          ' "${DAILY_LOG}" > "${TEMP_FILE}"
+
+          # Replace original file
+          mv "${TEMP_FILE}" "${DAILY_LOG}"
+
+          echo "✅ Updated daily log with GitHub activity"
+
+      - name: Commit and push changes
+        if: steps.activity.outputs.found_activity == 'true'
+        run: |
+          git add "02-Work/Daily-Logs/${{ steps.date.outputs.today }}.md"
+
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Update daily work log for ${{ steps.date.outputs.today }} with GitHub activity
+
+          Automated population with:
+          - PRs opened
+          - PRs reviewed
+          - PRs merged
+          - Commits pushed
+
+          🤖 Generated by GitHub Actions"
+
+          git push
+
+      - name: Log result
+        run: |
+          if [ "${{ steps.activity.outputs.found_activity }}" == "true" ]; then
+            echo "✅ Daily log updated with GitHub activity"
+          else
+            echo "ℹ️ No GitHub activity found for today"
+          fi
