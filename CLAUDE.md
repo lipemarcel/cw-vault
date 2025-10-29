@@ -402,11 +402,13 @@ See [[Daily Work Log - Automation Guide]] for detailed setup instructions:
 - Learnings: Capture technical insights
 
 #### End of Day (5 minutes)
-1. Fill "What I Did Today" section
-2. Document "What I Learned"
-3. List blockers and questions
-4. Create action items for tomorrow
-5. Fill standup summary (if applicable)
+1. **Automated activity population** (6 PM BRT via `populate-daily-log.yml`)
+2. OR run manually: `./scripts/populate-daily-log.sh`
+3. Review generated GitHub activity
+4. Fill "What I Learned" section
+5. List blockers and questions
+6. Create action items for tomorrow
+7. Fill standup summary (if applicable)
 
 ### Weekly Review Process
 
@@ -453,10 +455,20 @@ Claude creates:
 - Linked to active projects (PayJIM, etc.)
 - Ready to fill in
 
-User: "Add PR review for cnp#735 to my log"
+User: "Populate my daily log with GitHub activity"
 
-Claude updates the PRs section:
-- Reviewed: PR #735 - Wallet USD support (infinitepay-cnp-monorepo)
+Claude runs the script:
+- Fetches PRs opened, reviewed, and merged
+- Retrieves commits pushed
+- Updates log with formatted activity
+- Asks if you want to commit
+
+User: "Populate yesterday's log too"
+
+Claude runs date-specific script:
+- ./scripts/populate-daily-log-date.sh 2025-10-13
+- Fetches activity for that specific date
+- Updates the log file
 
 User: "What did I work on this week?"
 
@@ -470,9 +482,29 @@ Claude reviews all daily logs from Mon-Fri:
 ### Related Resources
 
 - [[Daily Work Log Template]] - The base template
-- [[Daily Work Log - Automation Guide]] - Detailed automation setup
+- [[Daily-Log-GitHub-Automation]] - Complete automation guide with scripts
 - [[Professional Growth Plan]] - Career development tracking
 - [[Book Recommendations]] - Learning resources
+
+### Available Scripts
+
+**Populate today's log:**
+```bash
+./scripts/populate-daily-log.sh
+```
+
+**Populate a specific date:**
+```bash
+./scripts/populate-daily-log-date.sh YYYY-MM-DD
+./scripts/populate-daily-log-date.sh 2025-10-28
+```
+
+**Backfill multiple days:**
+```bash
+for date in 2025-10-22 2025-10-23 2025-10-24; do
+  ./scripts/populate-daily-log-date.sh $date
+done
+```
 
 ---
 

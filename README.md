@@ -41,6 +41,10 @@ git pull origin main
 
 **End of Day:**
 ```bash
+# Populate today's log with GitHub activity
+./scripts/populate-daily-log.sh
+
+# Or wait for automated update at 6 PM BRT
 git pull && git push origin main
 ```
 
@@ -324,33 +328,17 @@ Comprehensive documentation on InfinitePay technologies:
 
 <div align="center">
 
-### 🤖 Three Powerful Automations Running 24/7
+### 🤖 Four Powerful Automations Running 24/7
 
 </div>
 
 <table>
 <tr>
-<td width="33%">
-
-### 📚 Daily Learning
-
-**🕐 Schedule:** 9 AM UTC (6 AM BRT)  
-**📅 Frequency:** Every day
-
-**What it does:**
-- Claude AI generates focused learning note
-- Random tech topic selection
-- Auto-commits to `00-Inbox/`
-- Duplicate prevention
-
-**Topics:** React, TypeScript, Next.js, Testing, Architecture, etc.
-
-</td>
-<td width="33%">
+<td width="50%">
 
 ### 📝 Daily Work Logs
 
-**🕐 Schedule:** 8 AM UTC (5 AM BRT)  
+**🕐 Schedule:** 8 AM UTC (5 AM BRT)
 **📅 Frequency:** Weekdays only
 
 **What it does:**
@@ -362,11 +350,45 @@ Comprehensive documentation on InfinitePay technologies:
 **Format:** `YYYY-MM-DD.md`
 
 </td>
-<td width="33%">
+<td width="50%">
+
+### 📊 GitHub Activity Population (NEW!)
+
+**🕐 Schedule:** 9 PM UTC (6 PM BRT)
+**📅 Frequency:** Weekdays only
+
+**What it does:**
+- Fetches PRs opened, reviewed, merged
+- Retrieves commits pushed
+- Auto-updates daily log
+- Links to GitHub
+
+**Repos:** CNP, Dashboard, DS-Web, Receipt
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📚 Daily Learning
+
+**🕐 Schedule:** 9 AM UTC (6 AM BRT)
+**📅 Frequency:** Every day
+
+**What it does:**
+- Claude AI generates focused learning note
+- Random tech topic selection
+- Auto-commits to `00-Inbox/`
+- Duplicate prevention
+
+**Topics:** React, TypeScript, Next.js, Testing, Architecture, etc.
+
+</td>
+<td width="50%">
 
 ### 📥 Inbox Processing
 
-**🕐 Schedule:** 7 PM UTC (4 PM BRT)  
+**🕐 Schedule:** 7 PM UTC (4 PM BRT)
 **📅 Frequency:** Every Friday
 
 **What it does:**
@@ -387,6 +409,10 @@ Comprehensive documentation on InfinitePay technologies:
 <div align="center">
 
 **🎛️ All workflows can be triggered manually from GitHub Actions tab**
+
+**📜 Manual Scripts Available:**
+- `./scripts/populate-daily-log.sh` - Populate today's log
+- `./scripts/populate-daily-log-date.sh YYYY-MM-DD` - Populate any date
 
 </div>
 

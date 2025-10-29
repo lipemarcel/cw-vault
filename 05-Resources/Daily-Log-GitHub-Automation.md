@@ -57,11 +57,13 @@ The workflow uses `GITHUB_TOKEN` with `contents: write` permission (already conf
 
 ---
 
-### Method 2: Local Script (Recommended for On-Demand)
+### Method 2: Local Scripts (Recommended for On-Demand)
+
+#### Script A: Today's Log
 
 **Script**: [`scripts/populate-daily-log.sh`](../../scripts/populate-daily-log.sh)
 
-#### Prerequisites
+**Prerequisites:**
 
 1. **GitHub CLI** installed:
    ```bash
@@ -73,9 +75,7 @@ The workflow uses `GITHUB_TOKEN` with `contents: write` permission (already conf
    gh auth login
    ```
 
-#### Usage
-
-**Run from vault root**:
+**Usage - Populate today's log:**
 ```bash
 ./scripts/populate-daily-log.sh
 ```
@@ -86,6 +86,46 @@ The workflow uses `GITHUB_TOKEN` with `contents: write` permission (already conf
 3. ✍️ Updates the daily log file
 4. 💬 Asks if you want to commit
 5. 🚀 Optionally pushes to remote
+
+---
+
+#### Script B: Specific Date Log (NEW!)
+
+**Script**: [`scripts/populate-daily-log-date.sh`](../../scripts/populate-daily-log-date.sh)
+
+**Usage - Populate any date:**
+```bash
+# For a specific date
+./scripts/populate-daily-log-date.sh 2025-10-28
+
+# For yesterday
+./scripts/populate-daily-log-date.sh $(date -v-1d +'%Y-%m-%d')
+
+# For last week
+./scripts/populate-daily-log-date.sh 2025-10-22
+```
+
+**Use cases**:
+- **Backfill missing logs** - Populate logs you forgot to create
+- **Historical tracking** - Add activity for past dates
+- **Weekly batch updates** - Populate multiple days at once
+- **Catch up after vacation** - Fill in logs when you return
+
+**What it does**:
+1. ✅ Creates log for the specified date if it doesn't exist
+2. 📊 Fetches GitHub activity for that specific date
+3. ✍️ Updates the daily log file
+4. 💬 Asks if you want to commit
+5. 🚀 Optionally pushes to remote
+
+**Example - Backfill last week:**
+```bash
+./scripts/populate-daily-log-date.sh 2025-10-22
+./scripts/populate-daily-log-date.sh 2025-10-23
+./scripts/populate-daily-log-date.sh 2025-10-24
+./scripts/populate-daily-log-date.sh 2025-10-25
+./scripts/populate-daily-log-date.sh 2025-10-28
+```
 
 #### Example Output
 
@@ -319,20 +359,31 @@ gh pr list --repo cloudwalk/infinitepay-cnp-monorepo \
 Ask Claude to:
 
 **Populate today's log**:
-```
+
+```text
 "Run the populate daily log script"
 "Update my daily log with GitHub activity"
 ```
 
-**Check activity without updating**:
+**Populate a specific date**:
+
+```text
+"Populate my daily log for yesterday"
+"Run the populate script for 2025-10-28"
+"Backfill my logs for last week"
 ```
+
+**Check activity without updating**:
+
+```text
 "Show me my PRs from today"
 "What commits did I push today?"
 "Show my GitHub activity"
 ```
 
 **Troubleshoot automation**:
-```
+
+```text
 "Help me debug the populate daily log workflow"
 "Why isn't my daily log being updated?"
 "Check the GitHub Actions workflow for errors"
