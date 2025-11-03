@@ -1,52 +1,60 @@
 ---
-created: 2025-10-19
+created: 2025-10-26
 tags: [learning, doc, programming, testing, react]
 ---
 
-# Component Testing Best Practices with React Testing Library
+# Implementing React Component Testing Best Practices
 
-React Testing Library has become the standard for testing React components, promoting more maintainable and user-centric tests. Today's focus is on writing better component tests.
+Testing React components effectively is crucial for maintaining a robust codebase at InfinitePay. Here's a focused approach to component testing using React Testing Library.
 
-## Key Concept: Testing User Behavior, Not Implementation
+## Key Concept: Component Testing Hierarchy
 
-Instead of testing implementation details (like component state), focus on testing how users interact with your component. This makes tests more resilient to refactoring and better reflects real user experiences.
+Follow the "Testing Trophy" principle:
+- Unit tests for complex utilities
+- Integration tests for component interactions
+- E2E tests for critical user flows
 
-## Practical Example:
+## Practical Example
 
 ```typescript
 // PaymentForm.test.tsx
-import { render, screen, fireEvent } from '@testing-library/react'
-import { PaymentForm } from './PaymentForm'
+import { render, screen, fireEvent } from '@testing-library/react';
+import { PaymentForm } from './PaymentForm';
 
 describe('PaymentForm', () => {
-  test('submits payment with valid card details', async () => {
-    render(<PaymentForm />)
+  test('submits payment with correct values', async () => {
+    const handleSubmit = jest.fn();
     
-    // Find elements by role and text (preferred over testId)
-    fireEvent.change(screen.getByLabelText(/card number/i), {
-      target: { value: '4111111111111111' }
-    })
+    render(<PaymentForm onSubmit={handleSubmit} />);
     
-    fireEvent.change(screen.getByLabelText(/expiry/i), {
-      target: { value: '12/25' }
-    })
+    fireEvent.change(screen.getByLabelText(/amount/i), {
+      target: { value: '100.00' }
+    });
     
-    fireEvent.click(screen.getByRole('button', { name: /pay/i }))
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     
-    // Assert the success message appears
-    expect(await screen.findByText(/payment successful/i)).toBeInTheDocument()
-  })
-})
+    expect(handleSubmit).toHaveBeenCalledWith({
+      amount: '100.00'
+    });
+  });
+});
 ```
 
-## Best Practices:
-1. Use semantic queries (getByRole, getByLabelText) over testId
-2. Test component behavior from user perspective
-3. Write tests that tolerate implementation changes
-4. Include accessibility considerations in tests
+## Best Practices
 
-## Recommended Resource:
-"Common Mistakes with React Testing Library" by Kent C. Dodds
-https://kentcdodds.com/blog/common-mistakes-with-react-testing-library
+1. Test behavior, not implementation
+2. Use role-based queries (getByRole) over test IDs
+3. Write tests from user perspective
+4. Mock only what's necessary (external APIs, complex animations)
 
-This guide covers advanced patterns and common pitfalls when testing React components.
+## Actionable Tips
+
+- Setup a consistent test structure across the team
+- Use test-driven development for complex features
+- Implement CI checks for test coverage
+
+## Recommended Resource
+
+Kent C. Dodds' "Testing JavaScript" course (testingjavascript.com) provides comprehensive coverage of modern testing practices, specifically for React applications.
+
+Remember: Good tests should give you confidence to refactor and enhance features without breaking existing functionality.
