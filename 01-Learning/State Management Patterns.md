@@ -1,63 +1,57 @@
 ---
-created: 2025-11-03
-tags: [learning, doc, programming, react, state-management]
+created: 2025-11-08
+tags: [learning, doc, programming, react, typescript, state-management]
 ---
 
 # State Management Patterns in React Applications
 
 ## Key Concept
 
-State management patterns define how data flows through your application. The choice between local state, context, and external libraries depends on complexity and scope. For InfinitePay's payment processing features, understanding when to use each pattern prevents prop drilling and maintains scalability.
+**Lifting State Up** is a fundamental pattern where shared state is moved to the nearest common ancestor component, allowing multiple child components to access and modify the same data. This prevents prop drilling and keeps your component tree predictable and maintainable.
 
-## Pattern Hierarchy
+## Practical Example for InfinitePay
 
-1. **Local State (useState)**: Single component concerns
-2. **Context API**: Shared state across component trees (auth, theme)
-3. **External Libraries (Zustand, Jotai)**: Complex, frequently-changing state
-
-## Practical Example
-
-For a payment form with validation state, discount application, and submission status:
+Consider a payment form where both `PaymentAmount` and `PaymentSummary` components need to access transaction state:
 
 ```typescript
-// ✅ Context for global payment context
-const PaymentContext = createContext<PaymentContextType | null>(null);
+// ❌ Avoid: Prop drilling
+<PaymentForm amount={amount} onAmountChange={setAmount} />
+<PaymentSummary amount={amount} fee={calculateFee(amount)} />
 
-export function PaymentProvider({ children }) {
-  const [discount, setDiscount] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
+// ✅ Better: Lift state to parent
+export const PaymentContainer: React.FC = () => {
+  const [amount, setAmount] = useState<number>(0);
   
   return (
-    <PaymentContext.Provider value={{ discount, setDiscount, isProcessing }}>
-      {children}
-    </PaymentContext.Provider>
+    <>
+      <PaymentForm value={amount} onChange={setAmount} />
+      <PaymentSummary amount={amount} />
+    </>
   );
-}
-
-// ✅ Local state for form-specific data
-function PaymentForm() {
-  const [formData, setFormData] = useState({ amount: '', email: '' });
-  const { discount, isProcessing } = useContext(PaymentContext);
-  
-  // Component logic
-}
+};
 ```
-
-## Best Practices
-
-- **Keep it simple**: Start with useState; migrate only when necessary
-- **Avoid context for frequently-changing data**: Use Zustand for high-frequency updates
-- **Provider structure**: Wrap providers at appropriate levels (Payment, Auth, Theme)
-- **TypeScript**: Always type your context to catch errors early
-- **Memoization**: Use useMemo for derived values in context to prevent unnecessary re-renders
 
 ## Actionable Tips
 
-1. Profile state updates using React DevTools Profiler
-2. Keep context consumers close to their data needs
-3. Separate concerns: one context per domain (auth, payments, ui)
-4. Use Zustand for payment transaction states with complex side effects
+1. **Identify shared state early**: Ask "which components need this data?" If it's more than one, consider lifting state up.
+
+2. **Use TypeScript for safety**: Define proper interfaces for your state callbacks:
+```typescript
+interface PaymentContextType {
+  amount: number;
+  setAmount: (value: number) => void;
+}
+```
+
+3. **Know when to use Context**: For deeply nested components, use React Context to avoid excessive prop drilling while keeping components reusable.
+
+4. **Consider Zustand for complex state**: For InfinitePay's transaction flows, a lightweight state management library can be more scalable than Context alone.
+
+## Best Practice
+
+Keep state as close to where it's needed as possible. Lifting too high creates unnecessary re-renders; lifting too low causes prop drilling. Strike a balance.
 
 ## Resource
 
-[React Context vs State Management Libraries](https://tkdodo.eu/blog/react-query) - TK Dodo's comprehensive guide on choosing patterns
+**React Documentation: Lifting State Up** - https://react.dev/learn/sharing-state-between-components
+Excellent interactive examples showing state patterns in practice.

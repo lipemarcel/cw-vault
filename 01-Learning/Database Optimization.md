@@ -1,65 +1,51 @@
 ---
-created: 2025-10-16
+created: 2025-11-13
 tags: [learning, doc, programming, database, performance]
 ---
 
-# Effective Database Query Optimization in Next.js Applications
+# Database Query Optimization in Next.js Applications
 
-Database query optimization is crucial for maintaining application performance, especially in financial applications like InfinitePay. Understanding how to properly structure and optimize database queries can significantly improve response times and user experience.
+## Key Concept
 
-## Key Concept: Query Optimization Techniques
-
-The main strategies for optimizing database queries include:
-- Proper indexing of frequently queried fields
-- Minimizing the number of database round trips
-- Using efficient JOIN operations
-- Implementing query caching where appropriate
+**N+1 Query Problem** is a common performance issue where an application executes one query to fetch parent records, then executes N additional queries to fetch related data for each parent. This exponentially increases database load and degrades performance.
 
 ## Practical Example
 
 ```typescript
-// Before optimization
-const getTransactions = async (userId: string) => {
-  const transactions = await prisma.transaction.findMany({
-    where: { userId },
-    include: { 
-      user: true,
-      merchant: true,
-      // Including all relations unnecessarily
-    }
-  });
-  return transactions;
-};
+// ❌ BAD: N+1 Problem
+async function getPayments() {
+  const payments = await db.payment.findMany();
+  // This loops creates N additional queries
+  return Promise.all(
+    payments.map(async (payment) => ({
+      ...payment,
+      user: await db.user.findUnique({ 
+        where: { id: payment.userId } 
+      })
+    }))
+  );
+}
 
-// After optimization
-const getTransactions = async (userId: string) => {
-  const transactions = await prisma.transaction.findMany({
-    where: { userId },
-    select: {
-      id: true,
-      amount: true,
-      timestamp: true,
-      merchant: {
-        select: {
-          name: true,
-          id: true
-        }
-      }
-    }
+// ✅ GOOD: Using JOIN/Include
+async function getPayments() {
+  return await db.payment.findMany({
+    include: { user: true }, // Single optimized query
   });
-  return transactions;
-};
+}
 ```
 
-## Best Practices
+## Actionable Best Practices
 
-1. Always use specific SELECT statements instead of selecting all fields
-2. Create indexes for frequently filtered or sorted columns
-3. Implement pagination for large datasets
-4. Use database-level caching for frequently accessed, rarely changed data
+1. **Use eager loading**: Always use `include` or `select` in Prisma to fetch related data in one query
+2. **Implement query pagination**: Fetch large datasets in chunks to reduce memory usage
+3. **Add database indexes**: Index frequently queried columns (`userId`, `createdAt`, etc.)
+4. **Monitor with logging**: Use Prisma's `logLevel: 'query'` in development to catch inefficient queries
+5. **Cache strategically**: Implement Redis caching for frequently accessed immutable data
 
-## Resource for Further Learning
+## For InfinitePay Context
 
-For deep diving into database optimization with Prisma and Next.js, check out the comprehensive guide at: [Database Performance Best Practices with Prisma](https://www.prisma.io/docs/guides/performance-and-optimization)
+When fetching payment transactions with user details, merchant info, and status logs—always batch load relationships rather than iterating queries. This directly impacts dashboard load times and API response speed.
 
-Remember: Monitor query performance regularly using tools like Prisma Studio or database-specific monitoring solutions to identify potential bottlenecks early.
+## Resource
+
+**Prisma Query Optimization Guide**: https://www.prisma.io/docs/orm/prisma-client/queries/select-fields#performance
