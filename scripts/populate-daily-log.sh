@@ -58,6 +58,9 @@ REPOS=(
   "infinitepay-receipt-js"
 )
 
+# Track which repos have activity for checkbox updates (space-separated list)
+REPOS_WITH_ACTIVITY=""
+
 # Create temporary file for activity
 ACTIVITY_FILE=$(mktemp)
 
@@ -94,6 +97,7 @@ for REPO in "${REPOS[@]}"; do
   if [ -n "$PRS" ]; then
     PRS_OPENED_CONTENT="${PRS_OPENED_CONTENT}**${REPO}**:\n${PRS}\n\n"
     FOUND_ACTIVITY=true
+    REPOS_WITH_ACTIVITY="${REPOS_WITH_ACTIVITY} ${REPO}"
     echo -e "${GREEN}  ✓ Found PRs${NC}"
   fi
 done
@@ -140,6 +144,7 @@ for REPO in "${REPOS[@]}"; do
   if [ -n "$REPO_REVIEWS" ]; then
     PRS_REVIEWED_CONTENT="${PRS_REVIEWED_CONTENT}**${REPO}**:\n${REPO_REVIEWS}\n"
     FOUND_ACTIVITY=true
+    REPOS_WITH_ACTIVITY="${REPOS_WITH_ACTIVITY} ${REPO}"
     echo -e "${GREEN}  ✓ Found reviews${NC}"
   fi
 done
@@ -164,6 +169,7 @@ for REPO in "${REPOS[@]}"; do
   if [ -n "$MERGED" ]; then
     PRS_MERGED_CONTENT="${PRS_MERGED_CONTENT}**${REPO}**:\n${MERGED}\n\n"
     FOUND_ACTIVITY=true
+    REPOS_WITH_ACTIVITY="${REPOS_WITH_ACTIVITY} ${REPO}"
     echo -e "${GREEN}  ✓ Found merged PRs${NC}"
   fi
 done
@@ -178,13 +184,24 @@ COMMITS_CONTENT=""
 for REPO in "${REPOS[@]}"; do
   echo -e "${BLUE}  Checking commits in ${REPO}...${NC}"
 
-  COMMITS=$(gh api repos/${ORG}/${REPO}/commits \
-    --jq '.[] | select(.commit.author.date | startswith("'${TODAY}'")) | select(.author.login == "lipemarcel") | "- `\(.sha[0:7])` - \(.commit.message | split("\n")[0])"' 2>/dev/null | head -10 || echo "")
+  # Fetch commits with better error handling
+  COMMITS_RAW=$(gh api repos/${ORG}/${REPO}/commits 2>&1)
 
-  if [ -n "$COMMITS" ]; then
-    COMMITS_CONTENT="${COMMITS_CONTENT}**${REPO}**:\n${COMMITS}\n\n"
-    FOUND_ACTIVITY=true
-    echo -e "${GREEN}  ✓ Found commits${NC}"
+  # Check if the response is valid JSON and not an error
+  if echo "$COMMITS_RAW" | jq -e '.' >/dev/null 2>&1; then
+    # Valid JSON, now filter for today's commits
+    COMMITS=$(echo "$COMMITS_RAW" | jq -r --arg today "${TODAY}" \
+      '.[] | select(.commit.author.date | startswith($today)) | select(.author.login == "lipemarcel") | "- `\(.sha[0:7])` - \(.commit.message | split("\n")[0])"' 2>/dev/null | head -10 || echo "")
+
+    if [ -n "$COMMITS" ]; then
+      COMMITS_CONTENT="${COMMITS_CONTENT}**${REPO}**:\n${COMMITS}\n\n"
+      FOUND_ACTIVITY=true
+      REPOS_WITH_ACTIVITY="${REPOS_WITH_ACTIVITY} ${REPO}"
+      echo -e "${GREEN}  ✓ Found commits${NC}"
+    fi
+  else
+    # API error - skip this repo
+    echo -e "${YELLOW}  ⚠ Could not fetch commits (API error)${NC}"
   fi
 done
 
@@ -229,6 +246,20 @@ awk '
 
 # Replace original file
 mv "${TEMP_FILE}" "${DAILY_LOG}"
+
+# Update repository checkboxes based on activity
+echo -e "${BLUE}📋 Updating repository checkboxes...${NC}"
+for REPO in "${REPOS[@]}"; do
+  # Check if repo is in the space-separated list
+  if echo " ${REPOS_WITH_ACTIVITY} " | grep -q " ${REPO} "; then
+    # Mark checkbox as checked for repos with activity
+    sed -i.bak "s/- \[ \] ${REPO}/- [x] ${REPO}/" "${DAILY_LOG}"
+    echo -e "${GREEN}  ✓ Checked ${REPO}${NC}"
+  fi
+done
+
+# Remove backup file created by sed
+rm -f "${DAILY_LOG}.bak"
 
 echo -e "${GREEN}✅ Successfully updated daily log with GitHub activity!${NC}"
 echo -e "${BLUE}📄 File: ${DAILY_LOG}${NC}\n"
