@@ -1,57 +1,64 @@
 ---
-created: 2025-11-08
-tags: [learning, doc, programming, react, typescript, state-management]
+created: 2025-11-15
+tags: [learning, doc, programming, react, state-management]
 ---
 
 # State Management Patterns in React Applications
 
 ## Key Concept
 
-**Lifting State Up** is a fundamental pattern where shared state is moved to the nearest common ancestor component, allowing multiple child components to access and modify the same data. This prevents prop drilling and keeps your component tree predictable and maintainable.
+State management patterns define how data flows through your application. The three primary approaches are:
 
-## Practical Example for InfinitePay
+1. **Local State** - Managed within a single component using `useState`
+2. **Lifted State** - Shared between sibling components via a common parent
+3. **Global State** - Accessible across the entire application using Context API or external libraries
 
-Consider a payment form where both `PaymentAmount` and `PaymentSummary` components need to access transaction state:
+For payment systems like InfinitePay, choosing the right pattern prevents prop drilling and ensures predictable data flow.
+
+## Practical Example
+
+Consider managing user payment status across multiple components:
 
 ```typescript
-// ❌ Avoid: Prop drilling
-<PaymentForm amount={amount} onAmountChange={setAmount} />
-<PaymentSummary amount={amount} fee={calculateFee(amount)} />
+// ✗ Anti-pattern: Prop drilling
+<Dashboard user={user} onStatusChange={handleStatusChange} />
+  <PaymentCard user={user} onStatusChange={handleStatusChange} />
+    <StatusBadge user={user} />
 
-// ✅ Better: Lift state to parent
-export const PaymentContainer: React.FC = () => {
-  const [amount, setAmount] = useState<number>(0);
+// ✓ Better: Context API
+const PaymentContext = createContext<PaymentContextType | undefined>(undefined);
+
+export const PaymentProvider: React.FC<{children: ReactNode}> = ({children}) => {
+  const [status, setStatus] = useState('pending');
   
   return (
-    <>
-      <PaymentForm value={amount} onChange={setAmount} />
-      <PaymentSummary amount={amount} />
-    </>
+    <PaymentContext.Provider value={{status, setStatus}}>
+      {children}
+    </PaymentContext.Provider>
   );
+};
+
+// Use in any component
+const StatusBadge = () => {
+  const {status} = useContext(PaymentContext);
+  return <span>{status}</span>;
 };
 ```
 
+## Best Practices
+
+- **Use Context API** for moderate complexity (auth, theme, user preferences)
+- **Consider libraries** (Zustand, Redux) for complex state with many interdependencies
+- **Keep state as local as possible** to improve performance and maintainability
+- **Avoid Context for frequently changing data** - it triggers unnecessary re-renders
+- **Combine patterns**: use local state for UI, Context for shared business logic
+
 ## Actionable Tips
 
-1. **Identify shared state early**: Ask "which components need this data?" If it's more than one, consider lifting state up.
-
-2. **Use TypeScript for safety**: Define proper interfaces for your state callbacks:
-```typescript
-interface PaymentContextType {
-  amount: number;
-  setAmount: (value: number) => void;
-}
-```
-
-3. **Know when to use Context**: For deeply nested components, use React Context to avoid excessive prop drilling while keeping components reusable.
-
-4. **Consider Zustand for complex state**: For InfinitePay's transaction flows, a lightweight state management library can be more scalable than Context alone.
-
-## Best Practice
-
-Keep state as close to where it's needed as possible. Lifting too high creates unnecessary re-renders; lifting too low causes prop drilling. Strike a balance.
+1. Profile your app with React DevTools to identify unnecessary re-renders
+2. Use `useMemo` and `useCallback` with Context to optimize performance
+3. Separate business logic state from UI state for clarity
 
 ## Resource
 
-**React Documentation: Lifting State Up** - https://react.dev/learn/sharing-state-between-components
-Excellent interactive examples showing state patterns in practice.
+**"Taming State in React"** by Kent C. Dodds - Comprehensive guide on when to use each pattern with practical examples: https://kentcdodds.com/blog/application-state-management-with-react

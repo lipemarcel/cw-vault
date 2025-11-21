@@ -1,43 +1,62 @@
 ---
-created: 2025-10-17
-tags: [learning, doc, programming, javascript, bundlers]
+created: 2025-11-18
+tags: [learning, doc, programming, build-tools, nextjs]
 ---
 
-# Understanding Modern Build Tools and Bundlers
-
-Build tools and bundlers are essential parts of modern web development that help optimize and prepare code for production. Today's focus is on their role in Next.js applications.
+# Understanding Build Tools and Bundlers in Modern Development
 
 ## Key Concept
-A bundler combines (bundles) multiple JavaScript files into a single file that can be served to the browser, while build tools handle tasks like transpilation, minification, and optimization. Next.js uses Turbopack (or webpack) under the hood to handle these processes automatically.
+
+Build tools and bundlers are essential in modern web development. They transform source code (JSX, TypeScript, CSS) into optimized, browser-compatible JavaScript. **Next.js uses Webpack by default**, but understanding the bundling process helps you optimize performance and debug issues effectively.
+
+Bundlers accomplish three critical tasks:
+1. **Module resolution** - Finding and linking dependencies
+2. **Code transformation** - Converting modern syntax to compatible formats
+3. **Optimization** - Tree-shaking, minification, and code splitting
 
 ## Practical Example
-```typescript
-// pages/index.tsx
-import { useState } from 'react'
-import { Button } from '@/components/Button'
-import { Analytics } from '@/utils/analytics'
 
-// Next.js will automatically code-split this component
-const DynamicComponent = dynamic(() => import('@/components/Heavy'), {
-  loading: () => <p>Loading...</p>
+In an InfinitePay payment module, you might have:
+
+```typescript
+// src/modules/payment/index.ts
+export { PaymentForm } from './components/PaymentForm'
+export { usePaymentProcessor } from './hooks/usePaymentProcessor'
+export type { PaymentConfig } from './types'
+```
+
+The bundler:
+- Resolves all imports across files
+- Removes unused exports (tree-shaking)
+- Creates separate chunks for lazy-loaded components:
+
+```typescript
+const PaymentModal = dynamic(() => import('./PaymentModal'), {
+  loading: () => <LoadingSpinner />
 })
 ```
 
 ## Best Practices
-1. Use dynamic imports for large components that aren't immediately needed
-2. Leverage Next.js automatic code splitting at the page level
-3. Enable production builds with `next build` for optimal bundling
-4. Monitor bundle sizes using built-in analytics (`next build --analyze`)
 
-## Common Pitfalls
-- Importing entire libraries when only specific functions are needed
-- Not utilizing tree-shaking opportunities
-- Overlooking the impact of third-party packages on bundle size
+1. **Monitor bundle size** - Use `next/bundle-analyzer` to identify bloat
+2. **Leverage code splitting** - Use dynamic imports for route-based and component-based splitting
+3. **Configure aliases** - In `tsconfig.json`:
+```json
+{
+  "paths": {
+    "@/*": ["./*"],
+    "@components/*": ["./components/*"]
+  }
+}
+```
+4. **Understand output** - Review `.next/static` to see generated chunks
 
-## Resource for Deeper Learning
-Check out "JavaScript Bundlers, a Comparison" on web.dev:
-https://web.dev/articles/bundlers-overview
+## Actionable Tips
 
-This comprehensive guide explores different bundlers and their impact on modern web applications, with practical examples and performance considerations.
+- Run `npm run build && npm run analyze` to visualize bundle composition
+- Use Next.js Image component for automatic image optimization
+- Enable SWC minification in production for faster builds
 
-Remember: The goal is to ship the minimum amount of JavaScript necessary while maintaining functionality and performance.
+## Resource
+
+**Next.js Optimizing Documentation**: https://nextjs.org/docs/app/building-your-application/optimizing - Deep dive into bundling strategies, code splitting, and performance optimization

@@ -1,51 +1,49 @@
 ---
-created: 2025-11-13
+created: 2025-11-21
 tags: [learning, doc, programming, database, performance]
 ---
 
-# Database Query Optimization in Next.js Applications
+# Database Optimization: Query Efficiency and Connection Pooling
 
 ## Key Concept
 
-**N+1 Query Problem** is a common performance issue where an application executes one query to fetch parent records, then executes N additional queries to fetch related data for each parent. This exponentially increases database load and degrades performance.
+Database optimization focuses on minimizing query execution time and resource consumption. Two critical patterns are **query efficiency** (selecting only needed columns, using indexes) and **connection pooling** (reusing database connections instead of creating new ones for each request).
 
-## Practical Example
+## Practical Example for InfinitePay
+
+In a Next.js API route handling payment transactions:
 
 ```typescript
-// ❌ BAD: N+1 Problem
-async function getPayments() {
-  const payments = await db.payment.findMany();
-  // This loops creates N additional queries
-  return Promise.all(
-    payments.map(async (payment) => ({
-      ...payment,
-      user: await db.user.findUnique({ 
-        where: { id: payment.userId } 
-      })
-    }))
+// ❌ Inefficient: Multiple round-trips, N+1 problem
+const transactions = await db.query(
+  'SELECT * FROM transactions WHERE user_id = $1',
+  [userId]
+);
+for (const tx of transactions) {
+  const merchant = await db.query(
+    'SELECT * FROM merchants WHERE id = $1',
+    [tx.merchant_id]
   );
 }
 
-// ✅ GOOD: Using JOIN/Include
-async function getPayments() {
-  return await db.payment.findMany({
-    include: { user: true }, // Single optimized query
-  });
-}
+// ✅ Optimized: Single query with JOIN, selected columns
+const transactions = await db.query(
+  `SELECT t.id, t.amount, t.status, m.name, m.category 
+   FROM transactions t
+   LEFT JOIN merchants m ON t.merchant_id = m.id
+   WHERE t.user_id = $1`,
+  [userId]
+);
 ```
 
 ## Actionable Best Practices
 
-1. **Use eager loading**: Always use `include` or `select` in Prisma to fetch related data in one query
-2. **Implement query pagination**: Fetch large datasets in chunks to reduce memory usage
-3. **Add database indexes**: Index frequently queried columns (`userId`, `createdAt`, etc.)
-4. **Monitor with logging**: Use Prisma's `logLevel: 'query'` in development to catch inefficient queries
-5. **Cache strategically**: Implement Redis caching for frequently accessed immutable data
-
-## For InfinitePay Context
-
-When fetching payment transactions with user details, merchant info, and status logs—always batch load relationships rather than iterating queries. This directly impacts dashboard load times and API response speed.
+1. **Use Connection Pooling**: Configure `pg` (PostgreSQL) or your ORM with pooling (min: 2, max: 10 connections)
+2. **Add Database Indexes**: Index frequently queried columns like `user_id`, `transaction_id`, `created_at`
+3. **Avoid SELECT ***: Explicitly select needed columns to reduce payload
+4. **Implement Caching**: Use Redis for frequently accessed merchant or rate data (5-10min TTL)
+5. **Monitor Slow Queries**: Enable query logging to identify bottlenecks
 
 ## Resource
 
-**Prisma Query Optimization Guide**: https://www.prisma.io/docs/orm/prisma-client/queries/select-fields#performance
+[Postgres Query Performance Tips](https://www.postgresql.org/docs/current/sql-explain.html) - Master EXPLAIN ANALYZE to understand query execution plans and optimize accordingly.

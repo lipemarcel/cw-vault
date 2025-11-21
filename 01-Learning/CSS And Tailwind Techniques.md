@@ -1,5 +1,5 @@
 ---
-created: 2025-11-04
+created: 2025-11-19
 tags: [learning, doc, programming, react, tailwind]
 ---
 
@@ -7,48 +7,57 @@ tags: [learning, doc, programming, react, tailwind]
 
 ## Key Concept
 
-Tailwind CSS composition is about combining utility classes efficiently to avoid repetition and maintain consistency across your Next.js application. Rather than creating custom CSS classes, you leverage Tailwind's `@apply` directive and component abstraction to build reusable, maintainable UI patterns.
+Tailwind CSS shines when you leverage **composition over repetition**. Instead of scattering utility classes throughout components, use `@apply` directives and component abstractions to create reusable style patterns. This becomes crucial in payment UI systems like InfinitePay where consistency matters.
 
 ## Practical Example
 
-For InfinitePay's payment forms, instead of repeating button styles:
+For InfinitePay's form inputs, create a reusable component instead of repeating classes:
 
-```tsx
-// ❌ Avoid repetition
-<button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-  Pay Now
-</button>
-
-// ✅ Use component extraction
-const PaymentButton = ({ children }) => (
-  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
-    {children}
-  </button>
-);
+```typescript
+// components/PaymentInput.tsx
+export function PaymentInput({ label, ...props }: InputProps) {
+  return (
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
+      <input
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                   focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+                   transition-all duration-200"
+        {...props}
+      />
+    </div>
+  );
+}
 ```
 
-Or use `@apply` in your globals.css:
+Then use consistently across payment forms:
 
-```css
-@layer components {
-  .btn-payment {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200;
-  }
-}
+```typescript
+<PaymentInput label="Card Number" placeholder="•••• •••• •••• ••••" />
 ```
 
 ## Best Practices
 
-1. **Extract components early** - Create React components for recurring patterns (buttons, cards, inputs) rather than applying `@apply` everywhere
-2. **Use `@layer`** - Organize Tailwind directives into layers (base, components, utilities) for proper specificity
-3. **Leverage TypeScript** - Type your component props to ensure consistent styling across the payment dashboard
-4. **Responsive-first** - Use Tailwind's responsive prefixes (`md:`, `lg:`) for mobile-friendly payment interfaces
-5. **Dark mode support** - Add `dark:` variants for InfinitePay's accessibility requirements
+1. **Extract component-level styles** – Create wrapper components for repeated patterns rather than duplicating classes
+2. **Use CSS modules for complex layouts** – Combine Tailwind with `@apply` for component-specific styles
+3. **Organize utility order** – Position responsive prefixes first: `md:`, `lg:`, then dark mode: `dark:`
+4. **Leverage Tailwind config** – Define custom colors/spacing matching InfinitePay's brand in `tailwind.config.js`
+
+```typescript
+// tailwind.config.js
+theme: {
+  extend: {
+    colors: {
+      infinitepay: '#0066FF',
+    }
+  }
+}
+```
 
 ## Actionable Tip
 
-Create a `components/ui/` directory with shared components (Button, Input, Card) styled with Tailwind. This centralizes styling decisions and makes theme updates seamless.
+Audit your codebase for repeated class strings. If you see the same utility combination 3+ times, it's a candidate for a component wrapper.
 
-## Resource
-
-[Tailwind CSS Official Docs: Reusing Styles](https://tailwindcss.com/docs/reusing-styles) - Deep dive into @apply, component libraries, and composition strategies.
+**Resource:** [Tailwind CSS Documentation on Reusable Components](https://tailwindcss.com/docs/reusing-styles)
