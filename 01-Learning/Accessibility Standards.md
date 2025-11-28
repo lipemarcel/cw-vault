@@ -1,59 +1,58 @@
 ---
-created: 2025-10-21
-tags: [learning, doc, programming, accessibility, react]
+created: 2025-11-25
+tags: [learning, doc, programming, react, accessibility]
 ---
 
-# Implementing Accessible React Components
+# Web Accessibility Standards: WCAG 2.1 and Beyond
 
-Accessibility (a11y) in web applications is crucial for ensuring all users can interact with your interface effectively. This is particularly important for financial applications like InfinitePay where users need to perform critical transactions.
+## Key Concept
 
-## Key Concept: ARIA Attributes and Semantic HTML
+Web Content Accessibility Guidelines (WCAG) 2.1 is the international standard ensuring digital products are usable by everyone, including people with disabilities. It follows four principles: **Perceivable, Operable, Understandable, and Robust** (POUR). For InfinitePay's payment interface, accessibility isn't optional—it's critical for financial inclusion.
 
-ARIA (Accessible Rich Internet Applications) attributes and semantic HTML elements help screen readers and assistive technologies understand your application's structure and functionality.
-
-## Practical Example:
+## Practical Example in React/Next.js
 
 ```typescript
-// Bad Practice
-const PaymentButton = () => (
-  <div 
-    onClick={handlePayment}
-    style={{ cursor: 'pointer' }}
-  >
-    Process Payment
-  </div>
-);
+// ❌ Poor accessibility
+<button onClick={handlePayment}>Pay Now</button>
 
-// Good Practice
-const PaymentButton = () => (
-  <button
-    type="button"
-    onClick={handlePayment}
-    aria-label="Process payment"
-    disabled={isProcessing}
-  >
-    {isProcessing ? 'Processing...' : 'Process Payment'}
-  </button>
-);
+// ✅ WCAG compliant
+<button 
+  onClick={handlePayment}
+  aria-label="Complete payment of $99.99"
+  aria-describedby="payment-terms"
+  disabled={isProcessing}
+>
+  Pay Now
+</button>
+<span id="payment-terms" className="sr-only">
+  By clicking, you agree to our terms
+</span>
 ```
 
-## Best Practices:
+Key improvements:
+- **aria-label** provides context for screen readers
+- **sr-only** class hides text visually but keeps it accessible
+- Proper button state management with `disabled`
+- Semantic HTML structure
 
-1. Use semantic HTML elements (`button`, `nav`, `main`, `article`) instead of generic `div`s
-2. Include proper ARIA labels for interactive elements
-3. Ensure keyboard navigation works correctly
-4. Maintain sufficient color contrast (minimum 4.5:1 for normal text)
-5. Test with screen readers regularly
+## Actionable Best Practices
 
-## Implementation Tips:
+1. **Color contrast**: Ensure 4.5:1 ratio for normal text (WCAG AA standard)
+2. **Keyboard navigation**: All interactive elements must be keyboard accessible
+3. **Form labels**: Always link `<label>` to inputs using `htmlFor`
+4. **Alt text**: Describe images meaningfully for payment-related visuals
+5. **Focus management**: Use `useRef` and `focus()` for modal dialogs
+6. **Test regularly**: Use axe DevTools or Wave browser extensions
 
-- Use the React ESLint plugin `eslint-plugin-jsx-a11y` to catch accessibility issues during development
-- Implement focus management for modals and dynamic content
-- Provide visible focus indicators for all interactive elements
+## Automation Tip
 
-## Resource for Deeper Learning:
+Integrate accessibility testing in CI/CD:
+```bash
+npm install --save-dev @axe-core/react jest-axe
+```
 
-Check out "React Accessibility Guide" on the official React documentation:
-https://reactjs.org/docs/accessibility.html
+This catches violations before production—crucial for financial applications handling sensitive transactions.
 
-This comprehensive guide covers advanced patterns and best practices for building accessible React applications.
+## Resource
+
+**[WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)** - Official W3C reference with examples and success criteria for each level (A, AA, AAA).

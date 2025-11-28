@@ -1,46 +1,56 @@
 ---
-created: 2025-10-27
-tags: [learning, doc, programming, security, react]
+created: 2025-11-26
+tags: [learning, doc, programming, security, nextjs]
 ---
 
-# React Security Best Practices for Payment Applications
+# Security Best Practices for Payment Systems in Next.js
 
-When building payment applications like InfinitePay, security should be a top priority. Here's a focused look at essential React security practices:
+## Key Concept: Defense in Depth
 
-## Key Concept: XSS Prevention in React
+Security for payment systems like InfinitePay requires multiple layers of protection. Never rely on a single security measure. This "defense in depth" approach includes API route protection, environment variable management, input validation, and secure data transmission.
 
-While React automatically escapes content by default, there are still potential vulnerabilities when using certain APIs. Understanding proper data sanitization and safe rendering is crucial.
-
-## Practical Example:
+## Practical Example
 
 ```typescript
-// ❌ Unsafe approach
-const PaymentDetails = ({ html }) => {
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
-};
+// pages/api/payment/process.ts
+import { NextApiRequest, NextApiResponse } from 'next';
 
-// ✅ Safe approach
-const PaymentDetails = ({ content }) => {
-  return <div>{content}</div>;  // Auto-escaped by React
-};
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  // Layer 1: Validate HTTP method
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-// When dynamic URLs are needed:
-const SafeLink = ({ url }: { url: string }) => {
-  const isSafe = /^(https?:)?\/\/infinitepay\.com/.test(url);
-  return isSafe ? <a href={url}>Safe Link</a> : null;
-};
+  // Layer 2: Verify authentication token
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!verifyToken(token)) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  // Layer 3: Validate and sanitize input
+  const { amount, currency } = req.body;
+  if (!isValidAmount(amount) || !isValidCurrency(currency)) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+
+  // Layer 4: Use server-side secrets only
+  const apiKey = process.env.PAYMENT_API_KEY; // Never expose in client
+  
+  // Process payment securely...
+}
 ```
 
-## Best Practices:
+## Actionable Tips
 
-1. Avoid `dangerouslySetInnerHTML` unless absolutely necessary
-2. Use TypeScript's strict mode to catch potential security issues
-3. Implement proper Content Security Policy (CSP) headers
-4. Validate and sanitize all user inputs server-side
-5. Use environment variables for sensitive data
+- **Never expose secrets**: Keep API keys, tokens, and sensitive data in `.env.local`
+- **Validate everything**: Both frontend and backend validation are necessary
+- **Use HTTPS only**: Ensure all payment data transmissions are encrypted
+- **Implement rate limiting**: Protect against brute force attacks on payment endpoints
+- **Log securely**: Avoid logging sensitive data like full card numbers or API keys
 
-## Deep Dive Resource:
+## Resource
 
-Check out [OWASP React Security Cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/React_Security_Cheat_Sheet.html) for comprehensive security guidelines specific to React applications.
-
-Remember: Security is an ongoing process, not a one-time implementation. Regular security audits and keeping dependencies updated are essential practices for maintaining a secure application.
+[OWASP Top 10 for Web Applications](https://owasp.org/www-project-top-ten/) - Essential reference for understanding common security vulnerabilities and prevention strategies.

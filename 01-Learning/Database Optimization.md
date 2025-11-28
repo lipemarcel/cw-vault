@@ -1,49 +1,56 @@
 ---
-created: 2025-11-21
+created: 2025-11-22
 tags: [learning, doc, programming, database, performance]
 ---
 
-# Database Optimization: Query Efficiency and Connection Pooling
+# Database Optimization: Query Indexing & N+1 Problem Prevention
 
 ## Key Concept
 
-Database optimization focuses on minimizing query execution time and resource consumption. Two critical patterns are **query efficiency** (selecting only needed columns, using indexes) and **connection pooling** (reusing database connections instead of creating new ones for each request).
+The N+1 query problem occurs when your application executes one query to fetch parent records, then N additional queries to fetch related data for each parent. This severely impacts performance and is a critical issue in payment systems like InfinitePay where transaction speed matters.
 
-## Practical Example for InfinitePay
+## Practical Example (Next.js/TypeScript)
 
-In a Next.js API route handling payment transactions:
-
+**Problem - N+1 Query:**
 ```typescript
-// ❌ Inefficient: Multiple round-trips, N+1 problem
-const transactions = await db.query(
-  'SELECT * FROM transactions WHERE user_id = $1',
-  [userId]
-);
-for (const tx of transactions) {
-  const merchant = await db.query(
-    'SELECT * FROM merchants WHERE id = $1',
-    [tx.merchant_id]
-  );
-}
-
-// ✅ Optimized: Single query with JOIN, selected columns
-const transactions = await db.query(
-  `SELECT t.id, t.amount, t.status, m.name, m.category 
-   FROM transactions t
-   LEFT JOIN merchants m ON t.merchant_id = m.id
-   WHERE t.user_id = $1`,
-  [userId]
+// ❌ Bad: Fetches 1 transaction + N queries for each user
+const transactions = await db.transaction.findMany();
+const enriched = await Promise.all(
+  transactions.map(async (tx) => ({
+    ...tx,
+    user: await db.user.findUnique({ where: { id: tx.userId } })
+  }))
 );
 ```
 
-## Actionable Best Practices
+**Solution - Using Relations/Eager Loading:**
+```typescript
+// ✅ Good: Single optimized query with JOIN
+const transactions = await db.transaction.findMany({
+  include: {
+    user: true, // Eagerly load related user data
+    merchant: true
+  },
+  take: 100
+});
+```
 
-1. **Use Connection Pooling**: Configure `pg` (PostgreSQL) or your ORM with pooling (min: 2, max: 10 connections)
-2. **Add Database Indexes**: Index frequently queried columns like `user_id`, `transaction_id`, `created_at`
-3. **Avoid SELECT ***: Explicitly select needed columns to reduce payload
-4. **Implement Caching**: Use Redis for frequently accessed merchant or rate data (5-10min TTL)
-5. **Monitor Slow Queries**: Enable query logging to identify bottlenecks
+## Best Practices
+
+1. **Use `include` or `select`** in Prisma/ORM to fetch related data in one query
+2. **Add database indexes** on frequently queried columns (userId, merchantId, status)
+3. **Implement query pagination** to avoid loading massive datasets
+4. **Monitor query performance** using database logs and APM tools
+5. **Consider denormalization** for read-heavy payment reports
+
+## Actionable Tips
+
+- Profile your queries in development using `console.time()` or database query analyzers
+- For InfinitePay transactions, index on: `userId`, `merchantId`, `status`, `createdAt`
+- Use DataLoader pattern for batching queries if using GraphQL
 
 ## Resource
 
-[Postgres Query Performance Tips](https://www.postgresql.org/docs/current/sql-explain.html) - Master EXPLAIN ANALYZE to understand query execution plans and optimize accordingly.
+**Prisma Relation Queries Guide:** https://www.prisma.io/docs/concepts/relations
+
+This optimization is crucial for InfinitePay's transaction endpoints to maintain sub-second response times under load.

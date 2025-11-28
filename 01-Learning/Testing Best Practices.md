@@ -1,60 +1,55 @@
 ---
-created: 2025-10-26
+created: 2025-11-23
 tags: [learning, doc, programming, testing, react]
 ---
 
-# Implementing React Component Testing Best Practices
+# Testing Best Practices for React Components
 
-Testing React components effectively is crucial for maintaining a robust codebase at InfinitePay. Here's a focused approach to component testing using React Testing Library.
+## Key Concept
 
-## Key Concept: Component Testing Hierarchy
-
-Follow the "Testing Trophy" principle:
-- Unit tests for complex utilities
-- Integration tests for component interactions
-- E2E tests for critical user flows
+The **Testing Pyramid** principle advocates writing more unit tests, fewer integration tests, and minimal end-to-end tests. This approach balances test coverage with execution speed and maintenance burden—critical for payment systems like InfinitePay where reliability is paramount.
 
 ## Practical Example
 
-```typescript
-// PaymentForm.test.tsx
-import { render, screen, fireEvent } from '@testing-library/react';
-import { PaymentForm } from './PaymentForm';
+For a payment form component in InfinitePay, structure your tests like this:
 
-describe('PaymentForm', () => {
-  test('submits payment with correct values', async () => {
-    const handleSubmit = jest.fn();
-    
-    render(<PaymentForm onSubmit={handleSubmit} />);
-    
-    fireEvent.change(screen.getByLabelText(/amount/i), {
-      target: { value: '100.00' }
-    });
-    
-    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-    
-    expect(handleSubmit).toHaveBeenCalledWith({
-      amount: '100.00'
-    });
+```typescript
+// Unit test: Input validation
+test('validates card number format', () => {
+  render(<CardInput />);
+  const input = screen.getByRole('textbox');
+  fireEvent.change(input, { target: { value: 'invalid' } });
+  expect(screen.getByText(/invalid card/i)).toBeInTheDocument();
+});
+
+// Integration test: Form submission flow
+test('submits payment data correctly', async () => {
+  render(<PaymentForm />);
+  fireEvent.change(screen.getByPlaceholderText(/card number/i), {
+    target: { value: '4111111111111111' }
+  });
+  fireEvent.click(screen.getByRole('button', { name: /pay/i }));
+  await waitFor(() => {
+    expect(mockApi).toHaveBeenCalledWith(expectedPayload);
   });
 });
 ```
 
-## Best Practices
-
-1. Test behavior, not implementation
-2. Use role-based queries (getByRole) over test IDs
-3. Write tests from user perspective
-4. Mock only what's necessary (external APIs, complex animations)
-
 ## Actionable Tips
 
-- Setup a consistent test structure across the team
-- Use test-driven development for complex features
-- Implement CI checks for test coverage
+1. **Mock external APIs** to isolate component logic—use `jest.mock()` for payment gateway calls
+2. **Test user behavior**, not implementation details—query by accessible roles, not classNames
+3. **Keep tests focused**—one assertion per test when possible for clarity
+4. **Use TypeScript** with testing libraries for type safety in test code
+5. **Prioritize critical paths**—payment processing, validation, and error handling deserve thorough coverage
 
-## Recommended Resource
+## Best Practices
 
-Kent C. Dodds' "Testing JavaScript" course (testingjavascript.com) provides comprehensive coverage of modern testing practices, specifically for React applications.
+- Use `@testing-library/react` over Enzyme for React 18+ compatibility
+- Avoid snapshot tests for dynamic content; they create brittle tests
+- Test accessibility alongside functionality with `screen.getByRole()`
+- Run tests in CI/CD pipelines before deployment
 
-Remember: Good tests should give you confidence to refactor and enhance features without breaking existing functionality.
+## Resource
+
+[Testing Library Documentation](https://testing-library.com/docs/react-testing-library/intro) - Comprehensive guide with examples for modern React testing patterns.

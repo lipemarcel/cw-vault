@@ -1,5 +1,5 @@
 ---
-created: 2025-11-12
+created: 2025-11-24
 tags: [learning, doc, programming, git, collaboration]
 ---
 
@@ -7,43 +7,43 @@ tags: [learning, doc, programming, git, collaboration]
 
 ## Key Concept
 
-Effective git workflows establish clear patterns for branching, committing, and merging code. The **Git Flow** model and **trunk-based development** are two popular strategies. For teams like InfinitePay, adopting a consistent workflow prevents merge conflicts, maintains code quality, and enables smooth CI/CD integration.
-
-**Git Flow** uses feature branches (`feature/`, `hotfix/`, `release/`) off main development branches, ideal for scheduled releases. **Trunk-based development** keeps most developers on a main branch with short-lived feature branches, enabling continuous deployment.
+A well-structured git workflow prevents merge conflicts, maintains code quality, and enables seamless team collaboration. The **Git Flow** and **trunk-based development** patterns are industry standards. For InfinitePay, implementing a consistent branching strategy ensures predictable deployments and easier code reviews.
 
 ## Practical Example (Next.js Project)
 
 ```bash
 # Feature branch workflow
-git checkout -b feature/payment-gateway-integration
+git checkout -b feature/payment-validation
 # Make commits with clear messages
-git commit -m "feat: integrate Stripe webhook handler"
-git commit -m "test: add webhook validation tests"
-
-# Before merging, sync with main
-git fetch origin
-git rebase origin/main
-
-# Create pull request with description
-git push origin feature/payment-gateway-integration
+git commit -m "feat: add payment amount validation"
+git push origin feature/payment-validation
+# Create Pull Request with description
+# After approval and CI passes, merge to develop
+git checkout develop
+git pull origin develop
+git merge feature/payment-validation
+git push origin develop
 ```
 
-## Best Practices
-
-1. **Atomic commits**: Each commit should represent one logical change, making history readable and rollbacks easier
-2. **Descriptive PR titles**: Use conventional commits format (`feat:`, `fix:`, `docs:`, `test:`)
-3. **Require code reviews**: Enforce peer reviews before merging to catch bugs early
-4. **Protect main branch**: Disable direct pushes; require passing CI/CD checks
-5. **Squash merge for features**: Keep main history clean while preserving feature branch history
-6. **Delete merged branches**: Reduces clutter and confusion
+**Branch naming convention:**
+- `feature/description` - new features
+- `bugfix/description` - bug fixes
+- `hotfix/description` - production fixes
+- `release/v1.0.0` - release preparation
 
 ## Actionable Tips
 
-- Use `.gitignore` to exclude environment files and build artifacts
-- Configure git hooks (husky) to run linters before commits
-- Set up branch naming conventions in team documentation
-- Implement automated PR checks (ESLint, TypeScript, tests)
+1. **Commit frequently** with meaningful messages following conventional commits (feat:, fix:, docs:)
+2. **Keep branches short-lived** (ideally < 3 days) to minimize merge conflicts
+3. **Always pull before pushing** to sync with remote changes
+4. **Require code reviews** before merging to main/develop branches
+5. **Use `.gitignore`** properly—exclude `node_modules/`, `.env`, and build artifacts
+6. **Rebase instead of merge** for feature branches to maintain clean history: `git rebase develop`
 
-## Resource
+## Best Practice for InfinitePay
 
-[Atlassian Git Workflows Guide](https://www.atlassian.com/git/tutorials/comparing-workflows) - Comprehensive comparison of workflow strategies with visual examples
+Link commits to Jira tickets: `git commit -m "INF-1234: fix payment processing delay"` enables automatic ticket updates and traceability.
+
+## Resource for Deeper Learning
+
+**Git Documentation**: https://git-scm.com/book/en/v2 (especially chapters on branching and workflows)
