@@ -1,62 +1,62 @@
 ---
-created: 2025-11-16
+created: 2025-12-03
 tags: [learning, doc, programming, devops, nextjs]
 ---
 
-# CI/CD Strategies for Production Payment Systems
+# CI/CD Strategies for Next.js Applications
 
-## Key Concept
+## Key Concept: Pipeline Automation & Deployment Stages
 
-CI/CD (Continuous Integration/Continuous Deployment) is essential for payment platforms like InfinitePay. The strategy involves automating code testing, building, and deployment to catch issues early and enable rapid, reliable releases. For fintech, this means implementing robust validation gates before production.
+CI/CD (Continuous Integration/Continuous Deployment) automates testing, building, and deploying code changes. For InfinitePay, implementing a robust CI/CD pipeline reduces manual errors, accelerates releases, and ensures code quality gates before production.
 
-## Practical Example: Next.js Pipeline
+A typical strategy involves three stages:
+1. **CI (Build & Test)**: Automated linting, type checking, unit/integration tests
+2. **Staging**: Deploy to staging environment for QA validation
+3. **CD (Production)**: Automated deployment after approval
 
-A typical InfinitePay CI/CD workflow:
+## Practical Example: GitHub Actions for Next.js
 
 ```yaml
-# GitHub Actions example
-stages:
-  - lint & type-check (ESLint, TypeScript)
-  - unit tests (Jest)
-  - integration tests (payment API mocks)
-  - build (next build)
-  - security scan (dependency checks)
-  - staging deployment
-  - smoke tests
-  - production deployment
+name: Deploy InfinitePay
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run type-check
+      - run: npm run test
+      - run: npm run build
+      
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        run: npm run deploy
 ```
 
-For a payment component:
-```typescript
-// tests/payment.integration.test.ts
-describe('Payment Processing', () => {
-  it('should validate transaction before submission', async () => {
-    const result = await validatePayment({
-      amount: 100,
-      currency: 'BRL',
-      cardToken: 'tok_...'
-    });
-    expect(result.isValid).toBe(true);
-  });
-});
-```
+## Best Practices
 
-## Best Practices for Payment Systems
-
-1. **Environment Parity**: Ensure staging mirrors production exactly
-2. **Automated Rollback**: Implement automatic rollback on failed health checks
-3. **Feature Flags**: Deploy with toggles to gradually enable new payment features
-4. **Secrets Management**: Never commit API keys; use environment variables and secret vaults
-5. **Deployment Windows**: Schedule critical updates during low-traffic periods
-6. **Comprehensive Testing**: Always include payment edge cases (declined cards, timeouts, currency conversion)
+- **Branch Protection**: Require PR reviews and passing CI checks before merging to main
+- **Environment Parity**: Use identical Node versions, dependencies across environments
+- **Fail Fast**: Run quick linting/type checks before expensive tests
+- **Secrets Management**: Store API keys securely (use GitHub Secrets, never commit credentials)
+- **Atomic Deployments**: Deploy complete builds, never partial changes
+- **Rollback Strategy**: Maintain previous versions for quick rollback if issues arise
 
 ## Actionable Tips
 
-- Use `next/config` for environment-specific configurations
-- Implement pre-commit hooks with Husky to catch issues early
-- Monitor deployment metrics (response time, error rates) post-deploy
-- Maintain a runbook for common incident scenarios
+1. Add `next lint` and `tsc --noEmit` to CI before `next build`
+2. Use environment variables for API endpoints (dev/staging/prod)
+3. Implement automated performance testing in staging
+4. Cache node_modules to speed up builds
+5. Monitor deployment metrics post-release
 
 ## Resource
 
-**GitLab CI/CD Best Practices for Financial Systems**: Explore deployment strategies specifically designed for high-stakes environments with compliance requirements. Also review Vercel's deployment documentation for Next.js optimization.
+**GitHub Actions Documentation for Next.js**: https://github.com/features/actions - Covers workflow automation, caching strategies, and deployment triggers specific to Node.js applications.

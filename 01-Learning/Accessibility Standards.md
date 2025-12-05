@@ -1,58 +1,65 @@
 ---
-created: 2025-11-25
-tags: [learning, doc, programming, react, accessibility]
+created: 2025-12-05
+tags: [learning, doc, programming, accessibility, react]
 ---
 
-# Web Accessibility Standards: WCAG 2.1 and Beyond
+# Web Accessibility Standards: WCAG 2.1 Compliance
 
 ## Key Concept
 
-Web Content Accessibility Guidelines (WCAG) 2.1 is the international standard ensuring digital products are usable by everyone, including people with disabilities. It follows four principles: **Perceivable, Operable, Understandable, and Robust** (POUR). For InfinitePay's payment interface, accessibility isn't optional—it's critical for financial inclusion.
+Web Content Accessibility Guidelines (WCAG) 2.1 are the international standard for making web applications usable by everyone, including people with disabilities. The framework is organized around four principles: **Perceivable, Operable, Understandable, and Robust (POUR)**.
 
-## Practical Example in React/Next.js
+For InfinitePay, ensuring accessibility isn't just ethical—it's crucial for payment systems that serve diverse users globally.
 
-```typescript
+## Practical Example in Next.js/React
+
+```tsx
 // ❌ Poor accessibility
-<button onClick={handlePayment}>Pay Now</button>
+<button onClick={handlePayment}>Pay</button>
 
-// ✅ WCAG compliant
+// ✅ Accessible implementation
 <button 
   onClick={handlePayment}
-  aria-label="Complete payment of $99.99"
+  aria-label="Proceed to payment of $99.99"
   aria-describedby="payment-terms"
-  disabled={isProcessing}
 >
-  Pay Now
+  Pay $99.99
+  <span id="payment-terms" className="sr-only">
+    Terms apply. See details below.
+  </span>
 </button>
-<span id="payment-terms" className="sr-only">
-  By clicking, you agree to our terms
-</span>
-```
 
-Key improvements:
-- **aria-label** provides context for screen readers
-- **sr-only** class hides text visually but keeps it accessible
-- Proper button state management with `disabled`
-- Semantic HTML structure
+// Screen reader text utility
+const srOnly: CSSProperties = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden'
+};
+```
 
 ## Actionable Best Practices
 
-1. **Color contrast**: Ensure 4.5:1 ratio for normal text (WCAG AA standard)
-2. **Keyboard navigation**: All interactive elements must be keyboard accessible
-3. **Form labels**: Always link `<label>` to inputs using `htmlFor`
-4. **Alt text**: Describe images meaningfully for payment-related visuals
-5. **Focus management**: Use `useRef` and `focus()` for modal dialogs
-6. **Test regularly**: Use axe DevTools or Wave browser extensions
+1. **Semantic HTML**: Use proper heading hierarchy (`<h1>`, `<h2>`), form labels, and landmark elements (`<nav>`, `<main>`, `<footer>`)
 
-## Automation Tip
+2. **Color Contrast**: Maintain minimum 4.5:1 contrast ratio for normal text (WCAG AA standard)
 
-Integrate accessibility testing in CI/CD:
-```bash
-npm install --save-dev @axe-core/react jest-axe
-```
+3. **Keyboard Navigation**: Ensure all interactive elements are keyboard accessible with visible focus indicators
 
-This catches violations before production—crucial for financial applications handling sensitive transactions.
+4. **Form Accessibility**: Always associate labels with inputs using `htmlFor` attribute and provide clear error messages
 
-## Resource
+5. **ARIA Attributes**: Use `aria-label`, `aria-describedby`, `aria-live` for dynamic content updates (especially important for payment confirmations)
 
-**[WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)** - Official W3C reference with examples and success criteria for each level (A, AA, AAA).
+6. **Testing**: Integrate accessibility testing into your pipeline using tools like ESLint plugins and automated testing
+
+## Quick Tips
+
+- Use TypeScript's strict typing to catch missing accessibility attributes
+- Test with screen readers (NVDA, JAWS) during development
+- Implement focus management when payment modals appear
+
+## Resource for Deeper Learning
+
+**WebAIM's WCAG 2.1 Quick Reference**: https://webaim.org/articles/wcag2/
+
+Start with Level A compliance, then work toward AA (standard industry requirement).

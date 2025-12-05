@@ -1,5 +1,5 @@
 ---
-created: 2025-11-09
+created: 2025-11-30
 tags: [learning, doc, programming, nextjs, performance]
 ---
 
@@ -7,58 +7,46 @@ tags: [learning, doc, programming, nextjs, performance]
 
 ## Key Concept
 
-Next.js provides built-in performance features that significantly improve application speed. Two critical patterns are **Image Optimization** and **Code Splitting**. Image Optimization automatically serves responsive images in modern formats (WebP), while Code Splitting ensures only necessary JavaScript loads per route, reducing initial bundle size.
+Next.js provides built-in performance optimization tools that significantly reduce bundle size and improve Core Web Vitals. The two most impactful patterns are **automatic image optimization** via the `Image` component and **automatic code splitting** through route-based bundling.
 
 ## Practical Example
 
-**Image Optimization:**
-```typescript
+Instead of using standard HTML images in your InfinitePay payment dashboard:
+
+```tsx
+// ❌ Inefficient
+<img src="/payment-icon.png" alt="Payment" width="100" height="100" />
+
+// ✅ Optimized with Next.js Image
 import Image from 'next/image';
 
-export default function PaymentCard() {
-  return (
-    <Image
-      src="/payment-logo.png"
-      alt="InfinitePay Logo"
-      width={200}
-      height={100}
-      priority // Load above-the-fold images immediately
-    />
-  );
-}
+<Image 
+  src="/payment-icon.png" 
+  alt="Payment"
+  width={100}
+  height={100}
+  priority // Use for above-fold images
+  placeholder="blur" // Shows blurred placeholder while loading
+/>
 ```
 
-**Code Splitting with Dynamic Imports:**
-```typescript
-import dynamic from 'next/dynamic';
+Code splitting happens automatically—Next.js creates separate bundles for each route, so your `/checkout` page doesn't load code for the `/dashboard`.
 
-const PaymentModal = dynamic(
-  () => import('./PaymentModal'),
-  { loading: () => <p>Loading...</p> }
-);
+## Actionable Best Practices
 
-export default function CheckoutPage() {
-  return <PaymentModal />;
-}
-```
+1. **Use `next/image`** for all images to enable automatic optimization (WebP conversion, responsive sizing, lazy loading)
+2. **Leverage `priority` prop** for critical images above the fold to prevent Largest Contentful Paint (LCP) delays
+3. **Implement dynamic imports** for heavy components:
+   ```tsx
+   const PaymentModal = dynamic(() => import('@/components/PaymentModal'), 
+     { loading: () => <div>Loading...</div> }
+   );
+   ```
+4. **Monitor Core Web Vitals** using Next.js Analytics or PageSpeed Insights
+5. **Use `next/font`** for optimized font loading to prevent layout shift
 
-## Best Practices
+## Resource for Deeper Learning
 
-1. **Use `next/image`** for all images—it handles lazy loading, responsive sizing, and format optimization automatically
-2. **Mark above-the-fold images** with `priority` to prevent layout shift (CLS)
-3. **Lazy-load heavy components** like modals, charts, or payment forms with `dynamic()` to reduce initial JavaScript bundle
-4. **Analyze bundles** with `@next/bundle-analyzer` to identify large dependencies
-5. **Enable compression** by verifying gzip is configured in your deployment environment
+**Next.js Official Documentation on Performance**: https://nextjs.org/docs/app/building-your-application/optimizing/overview
 
-## Actionable Tips
-
-- Run `npm run build && npm run start` locally to measure real bundle impact
-- Check Network tab in DevTools—you should see images in WebP format on supported browsers
-- Profile Core Web Vitals using Lighthouse; aim for LCP < 2.5s, CLS < 0.1
-
-## Resource
-
-**Next.js Optimization Guide:** https://nextjs.org/docs/app/building-your-application/optimizing
-
----
-**Why This Matters:** At Cloudwalk, InfinitePay must handle high transaction volumes with fast load times. Optimized images reduce CDN bandwidth costs, while code splitting ensures users on slower connections experience responsive checkout flows.
+This covers image optimization, font loading, script optimization, and bundle analysis tools essential for production-grade applications like InfinitePay.
