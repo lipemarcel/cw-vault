@@ -1,59 +1,62 @@
 ---
-created: 2025-12-04
-tags: [learning, doc, programming, architecture, monorepo]
+created: 2025-12-12
+tags: [learning, doc, programming, architecture, nextjs]
 ---
 
 # Monorepo Architecture Patterns for Scalable Payment Systems
 
 ## Key Concept
 
-A monorepo (monolithic repository) consolidates multiple related projects in a single version-controlled repository while maintaining clear boundaries through workspaces. This pattern is ideal for payment platforms like InfinitePay, where shared logic (authentication, validation, SDK) must remain consistent across services.
-
-Unlike microrepos, monorepos reduce dependency management overhead and simplify cross-package refactoring. Tools like **pnpm workspaces** or **Yarn workspaces** enable dependency isolation while sharing root-level configurations.
+A monorepo (monolithic repository) consolidates multiple related projects into a single version-controlled repository while maintaining logical separation. This pattern is especially valuable for payment platforms like InfinitePay where shared libraries (authentication, payment processing, validation) need consistency across services.
 
 ## Practical Example
 
-For InfinitePay, structure your monorepo as:
+In a Next.js-based InfinitePay architecture, you might structure:
 
 ```
-infinitepay/
-├── packages/
-│   ├── core/          # Shared payment logic, types
-│   ├── sdk/           # Public TypeScript SDK
-│   ├── dashboard/     # Next.js admin dashboard
-│   └── api/           # Backend payment processor
-├── pnpm-workspace.yaml
-└── tsconfig.base.json
+packages/
+├── core/          # Shared types, utilities
+│   └── src/payment-schemas.ts
+├── api/           # Next.js API backend
+│   └── pages/api/transactions
+├── web/           # Next.js frontend
+│   └── pages/dashboard
+└── sdk/           # External SDK for merchants
 ```
 
-In `packages/core/package.json`, export payment validation:
-```json
-{
-  "exports": {
-    "./validation": "./src/validation.ts"
-  }
-}
-```
-
-Then import in `packages/sdk`:
+**Shared payment validation** (`packages/core`):
 ```typescript
-import { validateCardNumber } from '@infinitepay/core/validation';
+// packages/core/src/validators.ts
+export const validateTransaction = (amount: number): boolean => {
+  return amount > 0 && amount <= 999999.99;
+};
+```
+
+**Used across packages**:
+```typescript
+// packages/api/pages/api/process-payment.ts
+import { validateTransaction } from '@cloudwalk/core';
+
+if (!validateTransaction(req.body.amount)) {
+  return res.status(400).json({ error: 'Invalid amount' });
+}
 ```
 
 ## Best Practices
 
-1. **Use `pnpm` over `npm`** – Superior hoisting and disk efficiency for workspaces
-2. **Share TypeScript configuration** – Create `tsconfig.base.json` for consistent types across packages
-3. **Versioning strategy** – Use independent versioning per package to avoid unnecessary releases
-4. **Dependency boundaries** – Core packages shouldn't depend on UI packages; prevent circular dependencies
-5. **Separate concerns** – Keep types, utils, and business logic in dedicated workspace packages
+- **Use workspace managers**: Implement Yarn workspaces or pnpm for efficient dependency management
+- **Clear boundaries**: Define dependencies between packages explicitly (api depends on core, but not vice versa)
+- **Shared TypeScript configs**: Create base `tsconfig.json` in root, extend in packages for consistency
+- **Independent versioning**: Allow packages to version separately for flexibility
+- **CI/CD optimization**: Run tests/builds only for affected packages using tools like Nx or Turborepo
 
 ## Actionable Tips
 
-- Use `pnpm install` to respect workspace boundaries
-- Implement workspace linting with `eslint` checking for illegal dependencies
-- Document package responsibilities in each `README.md`
+1. Start with 2-3 packages max to avoid over-engineering
+2. Document inter-package dependencies clearly
+3. Use path aliases (`@cloudwalk/core`) for cleaner imports
+4. Implement shared ESLint/Prettier configs to maintain code quality
 
 ## Resource
 
-**Recommended:** [pnpm Workspaces Documentation](https://pnpm.io/workspaces) – Comprehensive guide with advanced filtering and filtering commands for monorepo management.
+[Turborepo Handbook](https://turbo.build/repo/docs) - Comprehensive guide on monorepo setup and optimization with Next.js.

@@ -1,56 +1,66 @@
 ---
-created: 2025-10-20
-tags: [learning, doc, programming, typescript, react]
+created: 2025-12-06
+tags: [learning, doc, programming, typescript, advanced]
 ---
 
-# Advanced TypeScript Utility Types in React Components
+# TypeScript Advanced Types: Utility Types & Generics
 
-Understanding and effectively using TypeScript's utility types can significantly improve type safety and code maintainability in React applications, particularly for InfinitePay's component architecture.
+## Key Concept
 
-## Key Concept: Pick and Omit Utility Types
+TypeScript's advanced type system enables type-safe, reusable code through **Utility Types** and **Generics**. These allow you to transform, constrain, and compose types dynamically, reducing boilerplate and catching errors at compile-time rather than runtime.
 
-TypeScript's `Pick` and `Omit` utility types are powerful tools for creating new types based on existing ones:
+## Practical Example for InfinitePay
 
-- `Pick<T, K>`: Constructs a type by selecting specific properties from T
-- `Omit<T, K>`: Constructs a type by excluding specific properties from T
-
-## Practical Example
+In payment processing, you often need flexible API response handlers:
 
 ```typescript
-interface Transaction {
-  id: string;
+// Generic type for API responses
+type ApiResponse<T> = {
+  status: 'success' | 'error';
+  data?: T;
+  error?: string;
+};
+
+// Payment-specific response
+type PaymentData = {
+  transactionId: string;
   amount: number;
   currency: string;
-  status: 'pending' | 'completed' | 'failed';
-  timestamp: Date;
-  merchantId: string;
-}
+};
 
-// Create a simplified type for transaction display
-type TransactionDisplayProps = Pick<Transaction, 'amount' | 'status' | 'timestamp'>;
+// Using Partial to make optional updates
+type PaymentUpdate = Partial<PaymentData>;
 
-// Create a form submission type excluding readonly fields
-type TransactionFormData = Omit<Transaction, 'id' | 'timestamp'>;
+// Using Pick to extract specific fields
+type PaymentPreview = Pick<PaymentData, 'amount' | 'currency'>;
 
-const TransactionDisplay: React.FC<TransactionDisplayProps> = ({
-  amount,
-  status,
-  timestamp
-}) => {
-  // Component implementation
+// Handler function with type safety
+const handlePaymentResponse = (response: ApiResponse<PaymentData>) => {
+  if (response.status === 'success' && response.data) {
+    console.log(`Processed ${response.data.transactionId}`);
+  }
 };
 ```
 
 ## Best Practices
 
-1. Use `Pick` when you need a subset of properties for a specific component
-2. Use `Omit` when excluding properties that shouldn't be modified
-3. Combine utility types to create precise component interfaces
-4. Document complex type manipulations with comments
+1. **Use Generics for reusability**: Create generic types for common patterns (API calls, state management)
+2. **Prefer Utility Types**: `Partial`, `Pick`, `Omit`, `Record` reduce repetition
+3. **Constrain generics**: Use `extends` to ensure type safety: `<T extends PaymentData>`
+4. **Avoid `any`**: Always specify types explicitly to maintain type safety throughout your application
+5. **Document constraints**: Comment complex generic constraints for team clarity
 
-## Recommended Resource
+## Actionable Tip
 
-TypeScript Handbook chapter on Utility Types:
-https://www.typescriptlang.org/docs/handbook/utility-types.html
+For Next.js API routes handling payments, create a reusable handler wrapper:
 
-This reference provides comprehensive examples and explanations of all built-in utility types in TypeScript.
+```typescript
+type Handler<T> = (data: T) => Promise<ApiResponse<any>>;
+const createHandler = <T,>(handler: Handler<T>) => handler;
+```
+
+## Resource
+
+**TypeScript Handbook - Utility Types**: https://www.typescriptlang.org/docs/handbook/utility-types.html
+
+Master these patterns to write safer, more maintainable payment processing logic in InfinitePay.

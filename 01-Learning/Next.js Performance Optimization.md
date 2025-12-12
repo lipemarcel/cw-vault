@@ -1,5 +1,5 @@
 ---
-created: 2025-11-30
+created: 2025-12-11
 tags: [learning, doc, programming, nextjs, performance]
 ---
 
@@ -7,46 +7,49 @@ tags: [learning, doc, programming, nextjs, performance]
 
 ## Key Concept
 
-Next.js provides built-in performance optimization tools that significantly reduce bundle size and improve Core Web Vitals. The two most impactful patterns are **automatic image optimization** via the `Image` component and **automatic code splitting** through route-based bundling.
+Next.js provides built-in performance features that significantly reduce bundle size and improve Core Web Vitals. Two critical patterns are **Image Optimization** via the `Image` component and **automatic code splitting** with dynamic imports.
+
+The `Image` component automatically serves optimized, responsive images in modern formats (WebP/AVIF), while dynamic imports ensure JavaScript chunks load only when needed—crucial for InfinitePay's payment flows where every millisecond matters.
 
 ## Practical Example
 
-Instead of using standard HTML images in your InfinitePay payment dashboard:
-
 ```tsx
-// ❌ Inefficient
-<img src="/payment-icon.png" alt="Payment" width="100" height="100" />
-
-// ✅ Optimized with Next.js Image
+// ✅ Good: Optimized image with Next.js Image component
 import Image from 'next/image';
 
-<Image 
-  src="/payment-icon.png" 
-  alt="Payment"
-  width={100}
-  height={100}
-  priority // Use for above-fold images
-  placeholder="blur" // Shows blurred placeholder while loading
-/>
-```
+export default function PaymentCard() {
+  return (
+    <Image
+      src="/payment-logo.png"
+      alt="Payment logo"
+      width={200}
+      height={100}
+      priority // Load immediately for LCP optimization
+    />
+  );
+}
 
-Code splitting happens automatically—Next.js creates separate bundles for each route, so your `/checkout` page doesn't load code for the `/dashboard`.
+// ✅ Good: Code splitting with dynamic imports
+import dynamic from 'next/dynamic';
+
+const PaymentModal = dynamic(() => import('./PaymentModal'), {
+  loading: () => <LoadingSpinner />,
+  ssr: false, // Disable SSR for client-only components
+});
+
+export default function CheckoutPage() {
+  return <PaymentModal />;
+}
+```
 
 ## Actionable Best Practices
 
-1. **Use `next/image`** for all images to enable automatic optimization (WebP conversion, responsive sizing, lazy loading)
-2. **Leverage `priority` prop** for critical images above the fold to prevent Largest Contentful Paint (LCP) delays
-3. **Implement dynamic imports** for heavy components:
-   ```tsx
-   const PaymentModal = dynamic(() => import('@/components/PaymentModal'), 
-     { loading: () => <div>Loading...</div> }
-   );
-   ```
-4. **Monitor Core Web Vitals** using Next.js Analytics or PageSpeed Insights
-5. **Use `next/font`** for optimized font loading to prevent layout shift
+1. **Use `Image` component** instead of `<img>` tags—automatic lazy-loading, responsive sizing, and format optimization
+2. **Set `priority={true}`** only for above-the-fold images (reduces Largest Contentful Paint)
+3. **Implement dynamic imports** for modals, payment gateways, and heavy libraries to reduce initial bundle
+4. **Monitor with Lighthouse** and Web Vitals to track improvements
+5. **Profile with DevTools** to identify slow components before deployment
 
-## Resource for Deeper Learning
+## Resource
 
-**Next.js Official Documentation on Performance**: https://nextjs.org/docs/app/building-your-application/optimizing/overview
-
-This covers image optimization, font loading, script optimization, and bundle analysis tools essential for production-grade applications like InfinitePay.
+[Next.js Image Optimization Documentation](https://nextjs.org/docs/app/building-your-application/optimizing/images) - Comprehensive guide on responsive images, lazy loading, and performance metrics.

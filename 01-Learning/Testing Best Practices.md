@@ -1,55 +1,53 @@
 ---
-created: 2025-11-23
-tags: [learning, doc, programming, testing, react]
+created: 2025-12-08
+tags: [learning, doc, programming, testing, nextjs]
 ---
 
-# Testing Best Practices for React Components
+# Testing Best Practices for Next.js Applications
 
-## Key Concept
+## Key Concept: The Testing Pyramid
 
-The **Testing Pyramid** principle advocates writing more unit tests, fewer integration tests, and minimal end-to-end tests. This approach balances test coverage with execution speed and maintenance burden—critical for payment systems like InfinitePay where reliability is paramount.
+The testing pyramid advocates for a balanced approach: many unit tests (fast, isolated), fewer integration tests (moderate speed, moderate scope), and minimal end-to-end tests (slow, full workflow). This strategy maximizes coverage while maintaining fast feedback loops—critical for InfinitePay's payment processing reliability.
 
 ## Practical Example
 
-For a payment form component in InfinitePay, structure your tests like this:
+For a payment component in InfinitePay:
 
 ```typescript
-// Unit test: Input validation
-test('validates card number format', () => {
-  render(<CardInput />);
-  const input = screen.getByRole('textbox');
-  fireEvent.change(input, { target: { value: 'invalid' } });
-  expect(screen.getByText(/invalid card/i)).toBeInTheDocument();
+// Unit test: Isolated validation logic
+describe('validateCardNumber', () => {
+  it('should reject invalid card formats', () => {
+    expect(validateCardNumber('1234')).toBe(false);
+    expect(validateCardNumber('4532123456789010')).toBe(true);
+  });
 });
 
-// Integration test: Form submission flow
-test('submits payment data correctly', async () => {
-  render(<PaymentForm />);
-  fireEvent.change(screen.getByPlaceholderText(/card number/i), {
-    target: { value: '4111111111111111' }
-  });
-  fireEvent.click(screen.getByRole('button', { name: /pay/i }));
-  await waitFor(() => {
-    expect(mockApi).toHaveBeenCalledWith(expectedPayload);
+// Integration test: Component + business logic
+describe('PaymentForm', () => {
+  it('should submit valid payment data', async () => {
+    render(<PaymentForm onSubmit={mockSubmit} />);
+    await userEvent.type(screen.getByLabelText(/card/i), '4532123456789010');
+    await userEvent.click(screen.getByRole('button', /submit/i));
+    expect(mockSubmit).toHaveBeenCalledWith(expect.objectContaining({ valid: true }));
   });
 });
 ```
 
 ## Actionable Tips
 
-1. **Mock external APIs** to isolate component logic—use `jest.mock()` for payment gateway calls
-2. **Test user behavior**, not implementation details—query by accessible roles, not classNames
-3. **Keep tests focused**—one assertion per test when possible for clarity
-4. **Use TypeScript** with testing libraries for type safety in test code
-5. **Prioritize critical paths**—payment processing, validation, and error handling deserve thorough coverage
+1. **Test behavior, not implementation** – Focus on what users experience, not internal details
+2. **Use descriptive test names** – Make failures self-documenting
+3. **Mock external APIs** – Isolate payment gateway calls in unit tests
+4. **Maintain test data builders** – Reduce boilerplate for complex objects like payment records
+5. **Run tests in CI/CD pipeline** – Catch regressions before production
 
-## Best Practices
+## Best Practices for Payment Systems
 
-- Use `@testing-library/react` over Enzyme for React 18+ compatibility
-- Avoid snapshot tests for dynamic content; they create brittle tests
-- Test accessibility alongside functionality with `screen.getByRole()`
-- Run tests in CI/CD pipelines before deployment
+- Test edge cases (expired cards, declined transactions, network failures)
+- Verify security-critical paths thoroughly
+- Use snapshot tests sparingly (fragile for dynamic data)
+- Keep test suites fast (<10 minutes for full suite)
 
 ## Resource
 
-[Testing Library Documentation](https://testing-library.com/docs/react-testing-library/intro) - Comprehensive guide with examples for modern React testing patterns.
+[Testing Library Documentation](https://testing-library.com/docs/) – Industry-standard guidance for React/Next.js testing with user-centric approach.

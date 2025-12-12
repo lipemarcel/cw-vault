@@ -1,63 +1,62 @@
 ---
-created: 2025-11-17
-tags: [learning, doc, programming, nextjs, api-design]
+created: 2025-12-07
+tags: [learning, doc, programming, api-design, nextjs]
 ---
 
 # API Design Principles for Payment Systems
 
 ## Key Concept
 
-RESTful API design emphasizes resource-oriented endpoints with predictable URL structures and HTTP methods. For payment systems like InfinitePay, this means organizing endpoints around resources (transactions, payments, customers) rather than actions, ensuring scalability and consistency.
+RESTful API design principles are critical for payment platforms like InfinitePay. The core idea is creating intuitive, predictable endpoints that use HTTP verbs correctly and return consistent response structures. This reduces integration friction and minimizes bugs in production payment flows.
 
 ## Practical Example
 
-Instead of action-based endpoints:
-```typescript
-// ❌ Avoid
-POST /api/processPayment
-POST /api/refundTransaction
-```
-
-Use resource-based endpoints:
-```typescript
-// ✅ Better
-POST /api/payments (create payment)
-GET /api/payments/:id (retrieve payment)
-PUT /api/payments/:id (update payment)
-POST /api/payments/:id/refunds (create refund)
-```
-
-## Next.js Implementation
-
-In your route handlers (`app/api/`), structure responses consistently:
+For InfinitePay transaction endpoints:
 
 ```typescript
-// app/api/payments/[id]/route.ts
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  try {
-    const payment = await fetchPayment(params.id);
-    return Response.json({ success: true, data: payment }, { status: 200 });
-  } catch (error) {
-    return Response.json({ success: false, error: error.message }, { status: 400 });
-  }
+// ❌ Poor: Unclear verbs and inconsistent responses
+GET /api/executeTransaction?id=123
+POST /api/getTransactionStatus
+
+// ✅ Better: RESTful, consistent, predictable
+GET /api/transactions/:id
+POST /api/transactions
+GET /api/transactions/:id/status
+
+// Response consistency
+interface TransactionResponse {
+  data: {
+    id: string;
+    amount: number;
+    status: 'pending' | 'completed' | 'failed';
+    timestamp: ISO8601;
+  };
+  meta: {
+    requestId: string;
+    timestamp: ISO8601;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
 }
 ```
 
-## Best Practices
+## Best Practices for Payment APIs
 
-1. **Use HTTP status codes correctly**: 200 (success), 201 (created), 400 (bad request), 401 (unauthorized), 404 (not found), 500 (server error)
-2. **Implement versioning**: `/api/v1/payments` allows future changes without breaking clients
-3. **Consistent error responses**: Always return structured error objects with codes and messages
-4. **Pagination for lists**: Include `limit`, `offset`, and `total_count` in list endpoints
-5. **Document endpoints**: Use OpenAPI/Swagger for API documentation
+1. **Idempotency**: Always include `idempotency-key` headers for POST requests to prevent duplicate transactions
+2. **Versioning**: Use URL versioning (`/api/v1/`) for backward compatibility
+3. **Pagination**: Implement consistent cursor-based pagination for transaction lists
+4. **Error Codes**: Use standard HTTP status codes (400, 401, 422, 500) with semantic payment-specific codes
+5. **Rate Limiting**: Protect endpoints with clear rate limit headers
 
 ## Actionable Tips
 
-- Use TypeScript interfaces to validate request/response contracts
-- Implement rate limiting for payment endpoints
-- Add comprehensive logging for audit trails
-- Always authenticate and authorize payment operations
+- Document all endpoints with OpenAPI/Swagger for team alignment
+- Use TypeScript interfaces to enforce request/response contracts
+- Implement middleware validation for payment data (amounts, currencies)
+- Test API contracts before frontend integration
 
 ## Resource
 
-[REST API Best Practices by Cloudflare](https://www.cloudflare.com/learning/api/what-is-a-rest-api/) - Comprehensive guide on RESTful design principles.
+[REST API Best Practices by JSON:API](https://jsonapi.org/) provides comprehensive standards for designing payment-safe APIs.
