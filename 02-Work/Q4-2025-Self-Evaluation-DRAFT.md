@@ -20,7 +20,7 @@ status: in-progress
 
 **Rating**: [ ] Outstanding | [x] 100% Consistent | [ ] Almost there | [ ] Below
 
-### Key Achievements (October - November)
+### Key Achievements (October - December)
 
 #### October: PayJIM Feature Delivery
 - **PayJIM Feature Delivery**: Shipped 13+ PRs for US market launch
@@ -43,10 +43,39 @@ status: in-progress
     - Orders total column with promotional pricing display (PR #4128)
   - **External Checkout**: UI improvements and advanced documentation (2 PRs merged)
 
+#### December: External Checkout & Receipt Service
+
+- **External Checkout Feature Development** (Dashboard):
+  - Settings tab with payment methods and address configuration (PR #4249)
+  - Checkout menu icon update (PR #4260)
+  - Link Integrado tab feature flag control (PR #4254)
+  - Tracking events implementation (PR #4271)
+  - Create Link analytics event (PR #4287)
+  - Settings updated tracking event (PR #4283)
+  - PayloadPreview tracking (PR #4277)
+  - Payment methods drawer migration (PR #4315)
+  - Analytics events improvements (PR #4302)
+
+- **Social Commerce Enhancement** (CNP Monorepo):
+  - Report store feature implementation (PR #925 - opened)
+
+- **Receipt Service** (infinitepay-receipt-js):
+  - Pierre banner component with responsive image rendering (PR #214)
+  - Complete test coverage for new component
+
+- **Invoice Payment Features** (CNP Monorepo - merged):
+  - Enrollment button price and frequency display (PR #895)
+  - Annual plan payment date format (PR #880)
+  - Quarterly/semi-annual payment date fix (PR #879)
+  - Weekly plan weekday display (PR #875)
+  - PIX countdown timer with reset functionality (PR #901)
+  - Proportional discount label fix (PR #916)
+  - PayJIM store_url removal (PR #902)
+
 - **Technical Excellence**:
   - Addressed 24 code review comments with thoroughness (October)
   - Maintained 100% test pass rate (242+ tests across pay-jim)
-  - Active code reviewer: 10+ PR reviews across repositories (November)
+  - Active code reviewer: 25+ PR reviews across repositories (Oct-Dec)
   - Upgraded design system integration (v6.0.2 → v6.3.2)
   - Code simplification: Removed 176 lines of legacy code (PR #745)
   - Fixed critical import bug in slug validation
@@ -56,30 +85,34 @@ status: in-progress
   - Comprehensive PayJIM documentation for team knowledge sharing
   - Tracked 40+ tasks across multiple work streams
   - Proactive blocker communication
-  - Active code review participation (10+ reviews in November)
+  - Active code review participation (25+ reviews across quarter)
 
 ### Draft Response (Portuguese)
 
 ```
-Sim, alcancei os objetivos esperados e mantive entregas consistentes no Q4. Contribuí ativamente em dois grandes projetos: lançamento do PayJIM no mercado americano (outubro) e implementação completa do sistema de preços promocionais no Social Commerce (novembro).
+Sim, alcancei os objetivos esperados e mantive entregas consistentes no Q4. Contribuí ativamente em três grandes projetos: lançamento do PayJIM no mercado americano (outubro), implementação completa do sistema de preços promocionais no Social Commerce (novembro), e desenvolvimento do External Checkout (dezembro).
 
 **PayJIM (Outubro)**: Implementei funcionalidades críticas como suporte a USD nos wallets (Apple Pay e Google Pay), branding completo JIM (logos, ícones, avatares), expansão de métodos de pagamento (Discover, Amex, Visa, Mastercard), e configuração de monitoramento com Sentry. Entreguei 13+ PRs incluindo conversão de moeda, remoção de parcelamento, validação de telefone americano, preferências de SMS, correções de dark mode, seletor de país, exibição de merchant handle sem prefixo "$", e redirect da página raiz.
 
 **Social Commerce (Novembro)**: Implementei sistema completo de preços promocionais, entregando 7+ PRs que integraram a funcionalidade em múltiplas páginas (home, detalhes de produto, carrinho, gestão de produtos no dashboard, e coluna de total de pedidos). Incluiu refinamentos de UX como reposicionamento de badges, ocultação de desconto zero, e melhorias de contraste no modo claro.
 
-Mantive 100% de testes passando (242+ testes no pay-jim), respondi a 24+ comentários de code review com melhorias além do solicitado, realizei refatoração proativa removendo 176 linhas de código legacy, identifiquei/corrigi bug crítico em produção, e participei ativamente como revisor de PRs (10+ reviews em novembro). Além das entregas técnicas, criei documentação abrangente da arquitetura do PayJIM e rastreamento de tarefas (40+ itens), facilitando o compartilhamento de conhecimento com o time.
+**External Checkout & Receipt Service (Dezembro)**: Entreguei 10+ PRs no Dashboard implementando configurações de checkout, tracking events, analytics, e melhorias de UX. No infinitepay-receipt-js, implementei o componente Pierre banner com renderização responsiva de imagens e cobertura completa de testes. Também contribuí com features de Invoice Payment no CNP monorepo (timer PIX, formatos de data, exibição de frequência de pagamento).
+
+Mantive 100% de testes passando (242+ testes no pay-jim), respondi a 24+ comentários de code review com melhorias além do solicitado, realizei refatoração proativa removendo 176 linhas de código legacy, identifiquei/corrigi bug crítico em produção, e participei ativamente como revisor de PRs (25+ reviews no trimestre). Além das entregas técnicas, criei documentação abrangente da arquitetura do PayJIM e rastreamento de tarefas (40+ itens), facilitando o compartilhamento de conhecimento com o time.
 ```
 
 ### Draft Response (English)
 
 ```
-Yes, I achieved expected objectives and maintained consistent delivery in Q4. I actively contributed to two major projects: PayJIM launch in the US market (October) and complete implementation of promotional pricing system for Social Commerce (November).
+Yes, I achieved expected objectives and maintained consistent delivery in Q4. I actively contributed to three major projects: PayJIM launch in the US market (October), complete implementation of promotional pricing system for Social Commerce (November), and External Checkout development (December).
 
 **PayJIM (October)**: I implemented critical features like USD support for wallets (Apple Pay and Google Pay), complete JIM branding overhaul (logos, icons, merchant avatars), payment method expansion (Discover, Amex, Visa, Mastercard), and Sentry monitoring setup. I delivered 13+ PRs including currency conversion, installment removal, US phone validation, SMS preferences, dark mode fixes, country selector, merchant handle display without "$" prefix, and root page redirect.
 
 **Social Commerce (November)**: I implemented a complete promotional pricing system, delivering 7+ PRs that integrated the functionality across multiple pages (home, product details, cart, product management in dashboard, and orders total column). Included UX refinements like badge repositioning, zero-discount hiding, and light mode contrast improvements.
 
-I maintained 100% test pass rate (242+ tests in pay-jim), addressed 24+ code review comments with improvements beyond what was requested, performed proactive refactoring removing 176 lines of legacy code, identified/fixed a critical production bug, and actively participated as PR reviewer (10+ reviews in November). Beyond technical deliverables, I created comprehensive PayJIM architecture documentation and task tracking (40+ items), facilitating knowledge sharing with the team.
+**External Checkout & Receipt Service (December)**: I delivered 10+ PRs in Dashboard implementing checkout settings, tracking events, analytics, and UX improvements. In infinitepay-receipt-js, I implemented the Pierre banner component with responsive image rendering and complete test coverage. I also contributed Invoice Payment features in CNP monorepo (PIX timer, date formats, payment frequency display).
+
+I maintained 100% test pass rate (242+ tests in pay-jim), addressed 24+ code review comments with improvements beyond what was requested, performed proactive refactoring removing 176 lines of legacy code, identified/fixed a critical production bug, and actively participated as PR reviewer (25+ reviews across the quarter). Beyond technical deliverables, I created comprehensive PayJIM architecture documentation and task tracking (40+ items), facilitating knowledge sharing with the team.
 ```
 
 ---
@@ -142,52 +175,50 @@ All automated processes are documented and replicable, demonstrating not just pe
 
 **Rating**: [ ] Outstanding | [x] 100% Consistent | [ ] Almost there | [ ] Below
 
-### Key Achievements (October - November)
+### Key Achievements (October - December)
 
-- **Proactive Documentation**:
-  - Created comprehensive PayJIM architecture documentation (October)
-  - Tracked 40+ tasks with clear ownership and dependencies
-  - Identified outstanding questions and team contacts
+- **Proactive Customer Support via Slack**:
+  - Active monitoring of product channels for CSE team questions
+  - Analyzed and resolved customer issues reported by CSE team in Slack threads
+  - Proactive investigation of client problems before escalation
+  - Helped CSE team understand technical context of customer issues
+  - Quick turnaround on reproducing and diagnosing reported bugs
 
-- **Transparent Communication**:
-  - Documented blockers promptly (Tiago design feedback, Shazam analytics)
-  - Proposed alternative solutions while waiting on dependencies
-  - Clear escalation of issues affecting progress
-  - Active code review participation providing constructive feedback (10+ reviews in November)
+- **Cross-Team Collaboration**:
+  - Bridge between CSE and engineering on product-related issues
+  - Provided technical explanations for customer-facing problems
+  - Reduced resolution time by proactively jumping into Slack threads
+  - Shared knowledge with CSE team to improve first-response accuracy
 
 - **Quality-First Approach**:
   - Test-driven development with 100% pass rate across all PRs
   - Addressed 24+ code review comments thoroughly
-  - Added test coverage beyond requirements (6 tests for formatMerchantHandle utility)
-  - Improved code abstraction and maintainability
   - Proactive refactoring: Removed 176 lines of dead/legacy code (PR #745)
   - Identified and fixed critical bug in production (wrong isValidSlug import)
-  - Maintained backward compatibility with flexible component design
-  - Comprehensive testing across multi-origin payment configurations
-  - Iterative UX improvements in Social Commerce based on design feedback (November)
+  - Active code review participation (25+ reviews across quarter)
 
 ### Draft Response (Portuguese)
 
 ```
-Sim, mantive ownership consistente no Q4, sendo proativo na identificação e resolução de problemas.
+Sim, mantive ownership consistente no Q4, sendo proativo na identificação e resolução de problemas dos nossos clientes.
 
-Criei documentação completa da arquitetura do PayJIM de forma proativa, sem que fosse solicitado, rastreando 40+ tarefas com ownership claro e identificando dependências. Isso facilita o trabalho de qualquer pessoa do time que precise entender ou contribuir com o projeto.
+Acompanho ativamente os canais de produto no Slack, analisando threads com dúvidas e problemas reportados pelo time de CSE. Quando identifico questões técnicas relacionadas aos produtos que trabalho (PayJIM, Social Commerce, External Checkout, Invoice Payment), entro proativamente nas discussões para ajudar a resolver. Isso inclui reproduzir bugs, investigar root causes, e fornecer contexto técnico que ajuda o CSE a responder clientes mais rapidamente.
 
-Fui transparente na comunicação de blockers, documentando impedimentos (feedback de design do Tiago, setup de analytics do Shazam) e propondo soluções alternativas enquanto aguardava resolução. Escalei issues de forma clara quando necessário. Participei ativamente como revisor de PRs (10+ reviews em novembro), contribuindo com feedback construtivo para melhorar a qualidade do código do time.
+Essa postura proativa reduziu o tempo de resolução de problemas, pois muitas vezes consigo identificar a causa antes mesmo de um ticket formal ser criado. Também compartilho conhecimento com o time de CSE para que eles possam responder questões similares no futuro com mais autonomia.
 
-Mantive abordagem quality-first, implementando test-driven development com 100% de testes passando em todos os PRs. Respondi a 24+ comentários de code review não apenas implementando o solicitado, mas adicionando melhorias extras em cobertura de testes e abstração de código. Fui proativo em identificar e refatorar código legacy (removendo 176 linhas desnecessárias) e corrigi bug crítico que poderia afetar validação de pagamentos. No Social Commerce, iteramos múltiplas vezes baseado em feedback de design para alcançar a melhor UX possível. Entendo o impacto das minhas ações nos clientes e time, por isso priorizo qualidade e documentação desde o início.
+Mantive abordagem quality-first em todo o código entregue, com 100% de testes passando em todos os PRs, refatoração proativa de código legacy (removendo 176 linhas desnecessárias), e participação ativa como revisor (25+ reviews no trimestre). Entendo que a qualidade do código impacta diretamente a experiência dos clientes, por isso priorizo testes e manutenibilidade desde o início.
 ```
 
 ### Draft Response (English)
 
 ```
-Yes, I maintained consistent ownership in Q4, being proactive in identifying and solving problems.
+Yes, I maintained consistent ownership in Q4, being proactive in identifying and solving our customers' problems.
 
-I created comprehensive PayJIM architecture documentation proactively, without being asked, tracking 40+ tasks with clear ownership and identifying dependencies. This facilitates the work of any team member who needs to understand or contribute to the project.
+I actively monitor product channels on Slack, analyzing threads with questions and issues reported by the CSE team. When I identify technical issues related to the products I work on (PayJIM, Social Commerce, External Checkout, Invoice Payment), I proactively join discussions to help resolve them. This includes reproducing bugs, investigating root causes, and providing technical context that helps CSE respond to customers faster.
 
-I was transparent in communicating blockers, documenting impediments (Tiago's design feedback, Shazam's analytics setup) and proposing alternative solutions while waiting for resolution. I escalated issues clearly when necessary. I actively participated as a PR reviewer (10+ reviews in November), contributing constructive feedback to improve the team's code quality.
+This proactive stance reduced problem resolution time, as I can often identify the cause before a formal ticket is even created. I also share knowledge with the CSE team so they can answer similar questions in the future with more autonomy.
 
-I maintained a quality-first approach, implementing test-driven development with 100% passing tests across all PRs. I addressed 24+ code review comments not just implementing what was requested, but adding extra improvements in test coverage and code abstraction. I was proactive in identifying and refactoring legacy code (removing 176 unnecessary lines) and fixed a critical bug that could affect payment validation. In Social Commerce, we iterated multiple times based on design feedback to achieve the best possible UX. I understand the impact of my actions on clients and the team, so I prioritize quality and documentation from the start.
+I maintained a quality-first approach in all delivered code, with 100% passing tests across all PRs, proactive legacy code refactoring (removing 176 unnecessary lines), and active participation as a reviewer (25+ reviews across the quarter). I understand that code quality directly impacts customer experience, so I prioritize testing and maintainability from the start.
 ```
 
 ---
@@ -295,6 +326,34 @@ The progress from Q3 to Q4 shows clear evolution: from identifying opportunities
 - [#4124](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4124) - Products promotional price feature
 - [#4128](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4128) - Orders total column promotional pricing
 
+**December - Dashboard (infinitepay-dashboard-js)**:
+
+- [#4227](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4227) - Remove webapp_promotional_price feature flag
+- [#4249](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4249) - External checkout settings tab
+- [#4254](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4254) - Hide link integrado tab feature flag
+- [#4260](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4260) - Checkout menu icon update
+- [#4271](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4271) - External checkout tracking events
+- [#4277](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4277) - PayloadPreview tracking
+- [#4283](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4283) - Settings updated tracking event
+- [#4287](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4287) - Create Link analytics event
+- [#4302](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4302) - Analytics events improvements
+- [#4315](https://github.com/cloudwalk/infinitepay-dashboard-js/pull/4315) - Payment methods drawer migration
+
+**December - CNP Monorepo (Invoice/Payment Features)**:
+
+- [#875](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/875) - Weekly plan weekday display
+- [#879](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/879) - Quarterly/semi-annual payment date fix
+- [#880](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/880) - Annual plan payment date format
+- [#895](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/895) - Enrollment button price and frequency
+- [#901](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/901) - PIX countdown timer
+- [#902](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/902) - PayJIM store_url removal
+- [#916](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/916) - Proportional discount label fix
+- [#925](https://github.com/cloudwalk/infinitepay-cnp-monorepo/pull/925) - Report store feature (opened)
+
+**December - Receipt Service (infinitepay-receipt-js)**:
+
+- [#214](https://github.com/cloudwalk/infinitepay-receipt-js/pull/214) - Pierre banner component with responsive images
+
 ### Automation & Tools Created
 
 - GitHub Actions workflow for daily logs
@@ -313,16 +372,18 @@ The progress from Q3 to Q4 shows clear evolution: from identifying opportunities
 
 ---
 
-## Notes & Reflections (October - November)
+## Notes & Reflections (October - December)
 
 ### What I'm Proud Of
 
 - **Shipped real AI implementations** (vs Q3's "preparing to propose")
-- Strong technical delivery: 20+ PRs merged across two major projects (PayJIM + Social Commerce)
+- Strong technical delivery: 40+ PRs merged across three major projects (PayJIM, Social Commerce, External Checkout)
 - Complete end-to-end feature delivery for promotional pricing system
+- First contribution to infinitepay-receipt-js repository (Pierre banner)
 - Created systems that benefit the entire team (documentation, automation)
 - Balanced feature work with process improvement
-- Active code review participation contributing to team code quality
+- Active code review participation contributing to team code quality (25+ reviews)
+- Expanded work across 4 repositories in Q4
 
 ### Blockers Encountered
 
@@ -334,7 +395,7 @@ The progress from Q3 to Q4 shows clear evolution: from identifying opportunities
 
 - **Keep momentum on AI implementation** - Build on Q4 successes
 - **Share learnings with team** - Present automation workflows in team meeting
-- **Deepen expertise across products** - PayJIM, Social Commerce, External Checkout
+- **Deepen expertise across products** - PayJIM, Social Commerce, External Checkout, Receipt Service
 - **Propose next AI initiative** - Identify team-wide opportunity for Q1 2026
 
 ---
@@ -348,11 +409,13 @@ The progress from Q3 to Q4 shows clear evolution: from identifying opportunities
 - [x] Active code review participation ✅ (10+ reviews)
 - [x] Maintain weekly achievement tracking ✅
 
-### December Goals (Upcoming)
+### December Goals (Completed/In Progress)
 
-- [ ] Continue feature work and support for Q4 priorities
-- [ ] Present automation workflows to team (if opportunity arises)
-- [ ] Propose Q1 2026 AI initiative
+- [x] External Checkout feature development (10+ PRs merged)
+- [x] Receipt Service contribution (Pierre banner - PR #214)
+- [x] Invoice Payment features (7 PRs merged)
+- [x] Continue active code review participation
+- [x] Maintain weekly achievement tracking
 - [ ] Prepare final Q4 evaluation (polish draft responses)
 - [ ] Review year-end progress (Q1-Q4 comparison)
 
@@ -360,10 +423,10 @@ The progress from Q3 to Q4 shows clear evolution: from identifying opportunities
 
 ## Progress Tracking
 
-**Last Updated**: 2025-11-12
-**Achievement Count**: 35+ achievements documented (October + November)
+**Last Updated**: 2025-12-19
+**Achievement Count**: 50+ achievements documented (October - December)
 **Coverage**: All 4 pillars ✅
-**Status**: Strong progress, on track for outstanding Q4 delivery
+**Status**: Outstanding Q4 delivery - 40+ PRs across 4 repositories
 
 ### Update Schedule
 
