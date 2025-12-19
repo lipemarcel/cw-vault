@@ -1,58 +1,64 @@
 ---
-created: 2025-11-29
-tags: [learning, doc, programming, javascript, typescript]
+created: 2025-12-14
+tags: [learning, doc, programming, javascript, es2024]
 ---
 
 # JavaScript ES2024 Features for Modern Web Development
 
 ## Key Concept
 
-ES2024 introduces several powerful features that enhance JavaScript's expressiveness and developer experience. The most impactful for InfinitePay's React/Next.js stack are **Promise.withResolvers()**, **Array grouping methods**, and **RegExp improvements**.
+ES2024 introduces several powerful features that enhance developer productivity and code clarity. The most impactful for payment systems like InfinitePay are **Promise.withResolvers()**, **Array grouping methods**, and **improved error handling with cause chaining**.
 
-**Promise.withResolvers()** simplifies Promise creation by returning an object with `{promise, resolve, reject}`, eliminating the need for wrapper functions—particularly useful for complex async payment flows.
+## Practical Example: Payment Processing with Promise.withResolvers()
 
-## Practical Example
+Instead of wrapping promises in callbacks, ES2024 simplifies deferred promise patterns:
 
 ```typescript
 // Before ES2024
-function createPaymentPromise() {
-  let resolve, reject;
-  const promise = new Promise((res, rej) => {
-    resolve = res;
-    reject = rej;
+function processPayment() {
+  return new Promise((resolve, reject) => {
+    handleTransaction().then(resolve).catch(reject);
   });
-  return { promise, resolve, reject };
 }
 
-// ES2024 - Much cleaner
-const { promise, resolve, reject } = Promise.withResolvers();
-
-// Real-world InfinitePay usage
-async function processPayment(transactionId: string) {
+// ES2024 - cleaner approach
+function processPayment() {
   const { promise, resolve, reject } = Promise.withResolvers<PaymentResult>();
   
-  paymentService.on('complete', (result) => resolve(result));
-  paymentService.on('error', (error) => reject(error));
+  handleTransaction()
+    .then(resolve)
+    .catch(reject);
   
   return promise;
 }
 ```
 
-## Array Grouping Pattern
+## Array Grouping for Transaction Analytics
+
+Group transactions by status for reporting:
 
 ```typescript
-const transactions = [...]; // Array of payment transactions
+const transactions = [...]; // PaymentTransaction[]
 const grouped = Object.groupBy(transactions, (tx) => tx.status);
-// Result: { completed: [...], pending: [...], failed: [...] }
+// Result: { pending: [...], completed: [...], failed: [...] }
 ```
 
-## Actionable Tips
+## Best Practices
 
-1. **Use Promise.withResolvers()** for event-based async operations in payment handlers
-2. **Leverage Array.groupBy()** when organizing transaction data for dashboards
-3. **Update TypeScript** to 5.2+ to get full ES2024 type support
-4. **Test polyfills** for legacy browser support—check Can I Use before deploying
+1. **Use Promise.withResolvers() for complex async flows** - reduces boilerplate in middleware and service layers
+2. **Leverage Array.prototype.group()** - simplifies data aggregation for analytics dashboards
+3. **Chain errors meaningfully** - use error `cause` for debugging payment failures:
+
+```typescript
+try {
+  await chargeCard(paymentInfo);
+} catch (error) {
+  throw new Error("Payment processing failed", { cause: error });
+}
+```
+
+4. **Test with TypeScript strict mode** - ensure type safety with new features
 
 ## Resource
 
-Mozilla MDN Web Docs: [ES2024 Features](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers) provides comprehensive documentation with browser compatibility matrices.
+[TC39 ES2024 Proposals](https://github.com/tc39/proposals/blob/main/finished-proposals.md) - Official specification and browser compatibility details for all finalized features.

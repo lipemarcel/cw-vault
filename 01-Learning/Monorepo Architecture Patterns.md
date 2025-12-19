@@ -1,62 +1,54 @@
 ---
-created: 2025-12-12
+created: 2025-12-17
 tags: [learning, doc, programming, architecture, nextjs]
 ---
 
-# Monorepo Architecture Patterns for Scalable Payment Systems
+# Monorepo Architecture Patterns for Payment Systems
 
 ## Key Concept
 
-A monorepo (monolithic repository) consolidates multiple related projects into a single version-controlled repository while maintaining logical separation. This pattern is especially valuable for payment platforms like InfinitePay where shared libraries (authentication, payment processing, validation) need consistency across services.
+A monorepo (monolithic repository) consolidates multiple related projects in a single version-controlled repository, ideal for payment platforms like InfinitePay where services must maintain consistency. The primary patterns are **workspace-based** (npm/yarn workspaces) and **task-based** (Turborepo/nx), which enable shared code, unified versioning, and coordinated deployments.
 
 ## Practical Example
 
-In a Next.js-based InfinitePay architecture, you might structure:
+For InfinitePay's payment processing, structure packages as:
 
 ```
 packages/
-├── core/          # Shared types, utilities
-│   └── src/payment-schemas.ts
-├── api/           # Next.js API backend
-│   └── pages/api/transactions
-├── web/           # Next.js frontend
-│   └── pages/dashboard
-└── sdk/           # External SDK for merchants
+├── @infinitepay/core      # Shared payment logic, types
+├── @infinitepay/api       # Next.js API routes
+├── @infinitepay/dashboard # Next.js frontend app
+├── @infinitepay/ui        # Reusable React components
+└── @infinitepay/testing   # Shared test utilities
 ```
 
-**Shared payment validation** (`packages/core`):
-```typescript
-// packages/core/src/validators.ts
-export const validateTransaction = (amount: number): boolean => {
-  return amount > 0 && amount <= 999999.99;
-};
-```
-
-**Used across packages**:
-```typescript
-// packages/api/pages/api/process-payment.ts
-import { validateTransaction } from '@cloudwalk/core';
-
-if (!validateTransaction(req.body.amount)) {
-  return res.status(400).json({ error: 'Invalid amount' });
+**tsconfig.json** paths enable seamless imports:
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@infinitepay/core/*": ["packages/core/src/*"],
+      "@infinitepay/ui/*": ["packages/ui/src/*"]
+    }
+  }
 }
 ```
 
 ## Best Practices
 
-- **Use workspace managers**: Implement Yarn workspaces or pnpm for efficient dependency management
-- **Clear boundaries**: Define dependencies between packages explicitly (api depends on core, but not vice versa)
-- **Shared TypeScript configs**: Create base `tsconfig.json` in root, extend in packages for consistency
-- **Independent versioning**: Allow packages to version separately for flexibility
-- **CI/CD optimization**: Run tests/builds only for affected packages using tools like Nx or Turborepo
+1. **Clear boundaries**: Each package should have a single responsibility—types, components, API logic, or utilities
+2. **Dependency graph**: Use tools like `npm ls` or Turborepo's visualization to prevent circular dependencies
+3. **Shared types**: Keep TypeScript interfaces in `@infinitepay/core` to ensure consistency across payment operations
+4. **Version alignment**: Pin peer dependencies to prevent conflicts between dashboard and API
+5. **CI/CD optimization**: Use Turborepo caching to rebuild only affected packages on PRs
 
 ## Actionable Tips
 
-1. Start with 2-3 packages max to avoid over-engineering
-2. Document inter-package dependencies clearly
-3. Use path aliases (`@cloudwalk/core`) for cleaner imports
-4. Implement shared ESLint/Prettier configs to maintain code quality
+- Start with workspace setup before adding packages
+- Document each package's API surface clearly
+- Use consistent naming conventions (`@infinitepay/*`)
+- Implement pre-commit hooks to validate monorepo integrity
 
 ## Resource
 
-[Turborepo Handbook](https://turbo.build/repo/docs) - Comprehensive guide on monorepo setup and optimization with Next.js.
+[Turborepo Handbook](https://turbo.build/repo/docs) – Comprehensive guide on scaling monorepos with caching and task orchestration.

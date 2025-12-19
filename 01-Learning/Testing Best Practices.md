@@ -1,5 +1,5 @@
 ---
-created: 2025-12-08
+created: 2025-12-15
 tags: [learning, doc, programming, testing, nextjs]
 ---
 
@@ -7,47 +7,50 @@ tags: [learning, doc, programming, testing, nextjs]
 
 ## Key Concept: The Testing Pyramid
 
-The testing pyramid advocates for a balanced approach: many unit tests (fast, isolated), fewer integration tests (moderate speed, moderate scope), and minimal end-to-end tests (slow, full workflow). This strategy maximizes coverage while maintaining fast feedback loops—critical for InfinitePay's payment processing reliability.
+The testing pyramid is a strategic approach to test distribution: many unit tests (fast, isolated), fewer integration tests (moderate complexity), and minimal end-to-end tests (slow, comprehensive). This balance maximizes coverage while maintaining reasonable CI/CD pipeline speeds.
 
 ## Practical Example
 
-For a payment component in InfinitePay:
+For an InfinitePay payment component:
 
+**Unit Test** (Jest):
 ```typescript
-// Unit test: Isolated validation logic
-describe('validateCardNumber', () => {
-  it('should reject invalid card formats', () => {
-    expect(validateCardNumber('1234')).toBe(false);
-    expect(validateCardNumber('4532123456789010')).toBe(true);
+describe('PaymentProcessor', () => {
+  it('should calculate correct fee', () => {
+    const processor = new PaymentProcessor();
+    expect(processor.calculateFee(1000, 0.02)).toBe(20);
   });
 });
+```
 
-// Integration test: Component + business logic
-describe('PaymentForm', () => {
-  it('should submit valid payment data', async () => {
-    render(<PaymentForm onSubmit={mockSubmit} />);
-    await userEvent.type(screen.getByLabelText(/card/i), '4532123456789010');
-    await userEvent.click(screen.getByRole('button', /submit/i));
-    expect(mockSubmit).toHaveBeenCalledWith(expect.objectContaining({ valid: true }));
-  });
+**Integration Test** (Testing Library):
+```typescript
+it('should submit payment form successfully', async () => {
+  render(<PaymentForm />);
+  await userEvent.type(screen.getByLabelText(/amount/i), '100');
+  await userEvent.click(screen.getByRole('button', { name: /pay/i }));
+  expect(await screen.findByText(/success/i)).toBeInTheDocument();
+});
+```
+
+**E2E Test** (Playwright):
+```typescript
+test('complete payment flow', async ({ page }) => {
+  await page.goto('/checkout');
+  await page.fill('input[name="amount"]', '100');
+  await page.click('button:has-text("Process Payment")');
+  await expect(page).toHaveURL('/confirmation');
 });
 ```
 
 ## Actionable Tips
 
-1. **Test behavior, not implementation** – Focus on what users experience, not internal details
-2. **Use descriptive test names** – Make failures self-documenting
-3. **Mock external APIs** – Isolate payment gateway calls in unit tests
-4. **Maintain test data builders** – Reduce boilerplate for complex objects like payment records
-5. **Run tests in CI/CD pipeline** – Catch regressions before production
-
-## Best Practices for Payment Systems
-
-- Test edge cases (expired cards, declined transactions, network failures)
-- Verify security-critical paths thoroughly
-- Use snapshot tests sparingly (fragile for dynamic data)
-- Keep test suites fast (<10 minutes for full suite)
+1. **Aim for 70-80% coverage** on critical payment paths; 100% coverage is rarely worth the effort
+2. **Test behavior, not implementation** — refactor code without breaking tests
+3. **Use data builders** for complex test setup in payment scenarios
+4. **Mock external APIs** (payment gateways) to avoid flaky tests
+5. **Run unit tests locally** before pushing; E2E tests in CI only
 
 ## Resource
 
-[Testing Library Documentation](https://testing-library.com/docs/) – Industry-standard guidance for React/Next.js testing with user-centric approach.
+Check out **Testing Library's best practices guide**: https://testing-library.com/docs/queries/about/ — excellent for writing maintainable tests focused on user interactions rather than implementation details.

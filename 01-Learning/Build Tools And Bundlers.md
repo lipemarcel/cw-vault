@@ -1,62 +1,51 @@
 ---
-created: 2025-11-18
-tags: [learning, doc, programming, build-tools, nextjs]
+created: 2025-12-16
+tags: [learning, doc, programming, nextjs, build-tools]
 ---
 
-# Understanding Build Tools and Bundlers in Modern Development
+# Build Tools and Bundlers in Next.js
 
 ## Key Concept
 
-Build tools and bundlers are essential in modern web development. They transform source code (JSX, TypeScript, CSS) into optimized, browser-compatible JavaScript. **Next.js uses Webpack by default**, but understanding the bundling process helps you optimize performance and debug issues effectively.
+Build tools and bundlers are essential infrastructure that transform your source code into optimized artifacts for production. **SWC** (Speedy Web Compiler) is Next.js's default bundler—a Rust-based alternative to Babel that offers significantly faster compilation and smaller bundle sizes.
 
-Bundlers accomplish three critical tasks:
-1. **Module resolution** - Finding and linking dependencies
-2. **Code transformation** - Converting modern syntax to compatible formats
-3. **Optimization** - Tree-shaking, minification, and code splitting
+Unlike traditional bundlers (Webpack, Rollup), SWC operates at the Rust level, making it 10-20x faster than Babel for TypeScript/JSX transpilation.
 
 ## Practical Example
 
-In an InfinitePay payment module, you might have:
+In your `next.config.js` for InfinitePay:
 
 ```typescript
-// src/modules/payment/index.ts
-export { PaymentForm } from './components/PaymentForm'
-export { usePaymentProcessor } from './hooks/usePaymentProcessor'
-export type { PaymentConfig } from './types'
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  swcMinify: true, // Enabled by default in Next.js 13+
+  experimental: {
+    swcPlugins: [
+      ['@swc/plugin-emotion', {}], // Example: emotion plugin
+    ],
+  },
+};
+
+module.exports = nextConfig;
 ```
 
-The bundler:
-- Resolves all imports across files
-- Removes unused exports (tree-shaking)
-- Creates separate chunks for lazy-loaded components:
-
-```typescript
-const PaymentModal = dynamic(() => import('./PaymentModal'), {
-  loading: () => <LoadingSpinner />
-})
-```
-
-## Best Practices
-
-1. **Monitor bundle size** - Use `next/bundle-analyzer` to identify bloat
-2. **Leverage code splitting** - Use dynamic imports for route-based and component-based splitting
-3. **Configure aliases** - In `tsconfig.json`:
-```json
-{
-  "paths": {
-    "@/*": ["./*"],
-    "@components/*": ["./components/*"]
-  }
-}
-```
-4. **Understand output** - Review `.next/static` to see generated chunks
+SWC automatically handles:
+- JSX/TSX transpilation
+- Polyfill injection
+- Tree-shaking dead code
+- Module minification
 
 ## Actionable Tips
 
-- Run `npm run build && npm run analyze` to visualize bundle composition
-- Use Next.js Image component for automatic image optimization
-- Enable SWC minification in production for faster builds
+1. **Leverage Code Splitting**: Use dynamic imports to create route-based chunks—crucial for payment flows with multiple pages
+2. **Monitor Bundle Size**: Run `next build --analyze` to identify bloated dependencies in InfinitePay
+3. **Opt-in to Experimental Features Cautiously**: Test SWC plugins in staging before production payment systems
+4. **Use Server Components**: Let Next.js strip React from server bundles, reducing client-side weight
+
+## Best Practice
+
+For InfinitePay's critical payment path, prioritize core bundle size. Move non-essential UI libraries (charts, animations) to dynamic imports loaded after critical payment forms render.
 
 ## Resource
 
-**Next.js Optimizing Documentation**: https://nextjs.org/docs/app/building-your-application/optimizing - Deep dive into bundling strategies, code splitting, and performance optimization
+[SWC Documentation & Benchmarks](https://swc.rs/docs/getting-started) – Compare performance metrics and explore plugin ecosystem.
