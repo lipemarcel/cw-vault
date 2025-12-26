@@ -1,47 +1,51 @@
 ---
-created: 2025-10-18
+created: 2025-12-25
 tags: [learning, doc, programming, react, nextjs]
 ---
 
-# Understanding React Server Components Patterns
-
-React Server Components (RSC) represent a fundamental shift in how we build React applications, particularly in Next.js 13+. Today's focus is on effective patterns for using RSCs in InfinitePay projects.
+# React Server Components Patterns
 
 ## Key Concept
-Server Components run exclusively on the server and never ship to the client, reducing bundle size and enabling direct database/API access without client-side APIs.
 
-## Practical Example
+React Server Components (RSCs) enable you to render components exclusively on the server, reducing JavaScript sent to the client. This pattern is foundational in Next.js 13+ App Router, where components are server-side by default unless marked with `'use client'`.
+
+## How It Works
+
+Server Components can directly access databases, APIs, and sensitive credentials without exposing them to the browser. They're ideal for data-fetching layers and reducing bundle size.
+
 ```typescript
-// app/payments/page.tsx
-async function PaymentsPage() {
-  // Direct database query - only runs on server
-  const payments = await prisma.payments.findMany({
-    where: { merchantId: 'xyz' }
-  });
-
+// app/products/page.tsx (Server Component by default)
+async function ProductList() {
+  const products = await fetch('https://api.example.com/products', {
+    headers: { Authorization: `Bearer ${process.env.API_KEY}` }
+  }).then(res => res.json());
+  
   return (
-    <div>
-      <h1>Payments</h1>
-      <PaymentsList payments={payments} />
-      <ClientSideSearch /> {/* Use "use client" */}
-    </div>
+    <ul>
+      {products.map(p => <ProductCard key={p.id} product={p} />)}
+    </ul>
   );
+}
+
+// Client Component for interactivity
+'use client';
+function ProductCard({ product }) {
+  const [liked, setLiked] = useState(false);
+  return <div onClick={() => setLiked(!liked)}>{product.name}</div>;
 }
 ```
 
 ## Best Practices
-1. Keep data fetching in Server Components when possible
-2. Use the "use client" directive only when needed (interactive components)
-3. Pass server data as props to Client Components
-4. Leverage streaming with Suspense for progressive loading
 
-## Tips for InfinitePay
-- Place authentication/authorization logic in Server Components
-- Use Server Components for static merchant information displays
-- Keep form handling and interactive elements as Client Components
+1. **Keep Server Components at the top level** — Fetch data as high as possible to minimize client-side dependencies
+2. **Compose strategically** — Use Server Components for data fetching; pass data to Client Components for interactivity
+3. **Avoid passing functions to Client Components** — Server-side functions can't serialize; use Server Actions instead
+4. **Use Server Actions for mutations** — Wrap database writes with `'use server'` directives for type-safe form handling
 
-## Deeper Learning
-Check out "Server Components Patterns" in the official Next.js documentation:
-https://nextjs.org/docs/getting-started/react-essentials
+## Actionable Tip
 
-Remember: Server Components are about finding the right balance between server and client rendering for optimal performance and developer experience.
+When building InfinitePay features, identify data dependencies early. If a component needs real-time interactivity, wrap only that portion in `'use client'` while keeping parent fetching logic server-side.
+
+## Resource
+
+[Next.js Server Components Deep Dive](https://nextjs.org/docs/app/building-your-application/rendering/server-components) — Official documentation with interactive examples and migration strategies.

@@ -1,64 +1,56 @@
 ---
-created: 2025-11-15
-tags: [learning, doc, programming, react, state-management]
+created: 2025-12-20
+tags: [learning, doc, programming, react, nextjs, statemanagement]
 ---
 
-# State Management Patterns in React Applications
+# State Management Patterns in Next.js Applications
 
 ## Key Concept
 
-State management patterns define how data flows through your application. The three primary approaches are:
-
-1. **Local State** - Managed within a single component using `useState`
-2. **Lifted State** - Shared between sibling components via a common parent
-3. **Global State** - Accessible across the entire application using Context API or external libraries
-
-For payment systems like InfinitePay, choosing the right pattern prevents prop drilling and ensures predictable data flow.
+State management is critical for scalable applications. While React Context works for simple cases, production applications like InfinitePay benefit from predictable, centralized state patterns. The **reducer pattern** combined with custom hooks provides excellent separation of concerns and testability.
 
 ## Practical Example
 
-Consider managing user payment status across multiple components:
+Instead of prop drilling payment states across components, implement a payment context with useReducer:
 
 ```typescript
-// ✗ Anti-pattern: Prop drilling
-<Dashboard user={user} onStatusChange={handleStatusChange} />
-  <PaymentCard user={user} onStatusChange={handleStatusChange} />
-    <StatusBadge user={user} />
+// paymentContext.tsx
+interface PaymentState {
+  amount: number;
+  status: 'idle' | 'processing' | 'completed' | 'failed';
+  error: string | null;
+}
 
-// ✓ Better: Context API
-const PaymentContext = createContext<PaymentContextType | undefined>(undefined);
+type PaymentAction = 
+  | { type: 'START_PAYMENT'; payload: number }
+  | { type: 'SUCCESS' }
+  | { type: 'ERROR'; payload: string };
 
-export const PaymentProvider: React.FC<{children: ReactNode}> = ({children}) => {
-  const [status, setStatus] = useState('pending');
-  
-  return (
-    <PaymentContext.Provider value={{status, setStatus}}>
-      {children}
-    </PaymentContext.Provider>
-  );
-};
+function paymentReducer(state: PaymentState, action: PaymentAction) {
+  switch (action.type) {
+    case 'START_PAYMENT':
+      return { ...state, status: 'processing', amount: action.payload };
+    case 'SUCCESS':
+      return { ...state, status: 'completed' };
+    case 'ERROR':
+      return { ...state, status: 'failed', error: action.payload };
+  }
+}
 
-// Use in any component
-const StatusBadge = () => {
-  const {status} = useContext(PaymentContext);
-  return <span>{status}</span>;
+export const usePayment = () => {
+  const [state, dispatch] = useReducer(paymentReducer, initialState);
+  return { state, dispatch };
 };
 ```
 
 ## Best Practices
 
-- **Use Context API** for moderate complexity (auth, theme, user preferences)
-- **Consider libraries** (Zustand, Redux) for complex state with many interdependencies
-- **Keep state as local as possible** to improve performance and maintainability
-- **Avoid Context for frequently changing data** - it triggers unnecessary re-renders
-- **Combine patterns**: use local state for UI, Context for shared business logic
-
-## Actionable Tips
-
-1. Profile your app with React DevTools to identify unnecessary re-renders
-2. Use `useMemo` and `useCallback` with Context to optimize performance
-3. Separate business logic state from UI state for clarity
+1. **Keep state as close as possible** to where it's used—avoid over-centralization
+2. **Use TypeScript discriminated unions** for action types to ensure type safety
+3. **Memoize context values** to prevent unnecessary re-renders
+4. **Consider Zustand or Redux** for complex cross-cutting state (authentication, user preferences)
+5. **Separate business logic** from UI components using custom hooks
 
 ## Resource
 
-**"Taming State in React"** by Kent C. Dodds - Comprehensive guide on when to use each pattern with practical examples: https://kentcdodds.com/blog/application-state-management-with-react
+Explore [Zustand](https://github.com/pmndrs/zustand) as a lightweight alternative for InfinitePay's global state needs—it offers simpler syntax than Redux with excellent TypeScript support.

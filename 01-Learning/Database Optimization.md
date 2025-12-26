@@ -1,59 +1,52 @@
 ---
-created: 2025-12-18
+created: 2025-12-24
 tags: [learning, doc, programming, database, performance]
 ---
 
-# Database Optimization: Query Efficiency & Connection Pooling
+# Database Optimization: Query Efficiency and Connection Pooling
 
 ## Key Concept
 
-Database optimization focuses on reducing query execution time and resource consumption. Two critical patterns are **query optimization** (selecting only needed data) and **connection pooling** (reusing connections instead of creating new ones for each request).
+Database optimization involves reducing query execution time and resource consumption through efficient querying, indexing, and connection management. For payment systems like InfinitePay, slow queries directly impact user experience and transaction throughput.
 
-## Practical Example for InfinitePay
+Two critical patterns are **N+1 query prevention** and **connection pooling**. N+1 occurs when you fetch a parent record, then query the database once per child record. Connection pooling maintains reusable database connections instead of creating new ones for each request.
 
-In a Next.js API route handling payment transactions, inefficient queries can cause timeout issues:
+## Practical Example
 
+**Problem:** Fetching users with their transactions (N+1 anti-pattern):
 ```typescript
-// ❌ Bad: N+1 query problem & fetching unnecessary data
-export async function GET(req: Request) {
-  const transactions = await db.query(
-    'SELECT * FROM transactions'
-  );
-  for (let t of transactions) {
-    const user = await db.query(
-      'SELECT * FROM users WHERE id = ?', [t.user_id]
-    );
-  }
-  return Response.json(transactions);
-}
-
-// ✅ Good: Single JOIN query with specific columns
-export async function GET(req: Request) {
-  const transactions = await db.query(
-    `SELECT t.id, t.amount, t.status, u.name 
-     FROM transactions t
-     JOIN users u ON t.user_id = u.id
-     WHERE t.created_at > NOW() - INTERVAL 24 HOUR`
-  );
-  return Response.json(transactions);
-}
+// ❌ Bad: N+1 queries
+const users = await db.user.findMany();
+const userTransactions = await Promise.all(
+  users.map(user => db.transaction.findMany({ where: { userId: user.id } }))
+);
 ```
 
-## Best Practices
+**Solution:** Use eager loading with Prisma relations:
+```typescript
+// ✅ Good: Single optimized query
+const users = await db.user.findMany({
+  include: { transactions: true },
+  take: 50, // Pagination
+});
+```
 
-1. **Use indexes** on frequently queried columns (user_id, payment_status)
-2. **Implement connection pooling** with libraries like `pg` (PostgreSQL) or `mysql2/promise`
-3. **Add pagination** for large datasets to reduce memory usage
-4. **Cache repetitive queries** using Redis for merchant/user data
-5. **Monitor slow queries** with database logs and APM tools
+For connection pooling in Next.js, use environment variables and singleton pattern:
+```typescript
+// lib/db.ts
+const prisma = global.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
+export default prisma;
+```
 
 ## Actionable Tips
 
-- Profile your database queries during load testing
-- Use `EXPLAIN` to analyze query execution plans
-- Set up alerts for queries exceeding 1000ms
-- Batch operations when processing multiple transactions
+1. **Index strategically**: Index frequently queried fields (userId, transactionId)
+2. **Use pagination**: Avoid fetching entire datasets; implement cursor-based pagination
+3. **Monitor queries**: Enable Prisma query logging in development
+4. **Cache strategically**: Use Redis for frequently accessed payment data
+5. **Batch operations**: Group inserts/updates to reduce round trips
 
 ## Resource
 
-[PostgreSQL Query Performance Insights](https://www.postgresql.org/docs/current/sql-explain.html) — Learn to read EXPLAIN plans and optimize execution strategies.
+[Prisma Query Optimization Guide](https://www.prisma.io/docs/guides/performance-and-optimization/query-optimization-performance)

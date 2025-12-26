@@ -1,5 +1,5 @@
 ---
-created: 2025-11-24
+created: 2025-12-22
 tags: [learning, doc, programming, git, collaboration]
 ---
 
@@ -7,43 +7,48 @@ tags: [learning, doc, programming, git, collaboration]
 
 ## Key Concept
 
-A well-structured git workflow prevents merge conflicts, maintains code quality, and enables seamless team collaboration. The **Git Flow** and **trunk-based development** patterns are industry standards. For InfinitePay, implementing a consistent branching strategy ensures predictable deployments and easier code reviews.
+A well-structured Git workflow ensures code quality, prevents conflicts, and maintains a clean project history. The **Git Flow** and **trunk-based development** patterns are two popular approaches for teams. Git Flow uses feature branches with dedicated release/hotfix branches, while trunk-based development keeps changes small and integrates to main frequently.
 
-## Practical Example (Next.js Project)
+## Practical Example for InfinitePay
+
+When implementing a payment feature in Next.js:
 
 ```bash
-# Feature branch workflow
-git checkout -b feature/payment-validation
+# Create feature branch from main
+git checkout -b feature/payment-gateway-integration
+
 # Make commits with clear messages
-git commit -m "feat: add payment amount validation"
-git push origin feature/payment-validation
-# Create Pull Request with description
-# After approval and CI passes, merge to develop
-git checkout develop
-git pull origin develop
-git merge feature/payment-validation
-git push origin develop
+git commit -m "feat: add Stripe integration service"
+git commit -m "test: add payment gateway tests"
+
+# Push and create Pull Request
+git push origin feature/payment-gateway-integration
 ```
 
-**Branch naming convention:**
-- `feature/description` - new features
-- `bugfix/description` - bug fixes
-- `hotfix/description` - production fixes
-- `release/v1.0.0` - release preparation
+In your PR, include:
+- Description of changes
+- Related issue number
+- Testing checklist
+- Screenshots if UI changes
 
 ## Actionable Tips
 
-1. **Commit frequently** with meaningful messages following conventional commits (feat:, fix:, docs:)
-2. **Keep branches short-lived** (ideally < 3 days) to minimize merge conflicts
-3. **Always pull before pushing** to sync with remote changes
-4. **Require code reviews** before merging to main/develop branches
-5. **Use `.gitignore`** properly—exclude `node_modules/`, `.env`, and build artifacts
-6. **Rebase instead of merge** for feature branches to maintain clean history: `git rebase develop`
+1. **Use conventional commits** (`feat:`, `fix:`, `test:`) for automated changelog generation
+2. **Keep branches short-lived** (max 3-5 days) to reduce merge conflicts
+3. **Require code reviews** before merging—at least one approval from team members
+4. **Write atomic commits** that represent logical units of work
+5. **Protect main branch** with status checks (tests, linting) before merging
+6. **Squash commits** on merge to keep history clean
 
-## Best Practice for InfinitePay
+## Best Practice for InfinitePay Team
 
-Link commits to Jira tickets: `git commit -m "INF-1234: fix payment processing delay"` enables automatic ticket updates and traceability.
+Enforce a branch naming convention:
+- `feature/payment-validation`
+- `fix/transaction-timeout-bug`
+- `docs/api-authentication-guide`
 
-## Resource for Deeper Learning
+This makes it easier to track work and automate deployments.
 
-**Git Documentation**: https://git-scm.com/book/en/v2 (especially chapters on branching and workflows)
+## Resource
+
+**Learn more:** [Atlassian Git Workflow Tutorial](https://www.atlassian.com/git/tutorials/comparing-workflows)
