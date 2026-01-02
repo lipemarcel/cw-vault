@@ -1,5 +1,5 @@
 ---
-created: 2025-12-25
+created: 2025-12-27
 tags: [learning, doc, programming, react, nextjs]
 ---
 
@@ -7,45 +7,64 @@ tags: [learning, doc, programming, react, nextjs]
 
 ## Key Concept
 
-React Server Components (RSCs) enable you to render components exclusively on the server, reducing JavaScript sent to the client. This pattern is foundational in Next.js 13+ App Router, where components are server-side by default unless marked with `'use client'`.
+React Server Components (RSCs) are components that render exclusively on the server, enabling you to access databases and secrets directly without exposing them to the client. This pattern reduces JavaScript sent to browsers and improves security by keeping sensitive logic server-side.
 
-## How It Works
+## Practical Example
 
-Server Components can directly access databases, APIs, and sensitive credentials without exposing them to the browser. They're ideal for data-fetching layers and reducing bundle size.
+In a Next.js 13+ app directory, create a server component to fetch payment data:
 
 ```typescript
-// app/products/page.tsx (Server Component by default)
-async function ProductList() {
-  const products = await fetch('https://api.example.com/products', {
-    headers: { Authorization: `Bearer ${process.env.API_KEY}` }
-  }).then(res => res.json());
+// app/dashboard/payments/page.tsx
+export default async function PaymentsPage() {
+  const payments = await fetch('your-api-endpoint', {
+    headers: { Authorization: `Bearer ${process.env.API_SECRET}` }
+  });
+  
+  const data = await payments.json();
   
   return (
-    <ul>
-      {products.map(p => <ProductCard key={p.id} product={p} />)}
-    </ul>
+    <div>
+      <h1>Payment History</h1>
+      <PaymentsList payments={data} />
+    </div>
   );
 }
 
-// Client Component for interactivity
+// This is a Server Component - no 'use client' directive
+```
+
+For interactive elements, use the `'use client'` directive:
+
+```typescript
+// app/dashboard/payments/client-filter.tsx
 'use client';
-function ProductCard({ product }) {
-  const [liked, setLiked] = useState(false);
-  return <div onClick={() => setLiked(!liked)}>{product.name}</div>;
+
+export function PaymentFilter({ payments }: { payments: Payment[] }) {
+  const [filter, setFilter] = useState('');
+  
+  return (
+    <input 
+      value={filter} 
+      onChange={(e) => setFilter(e.target.value)}
+    />
+  );
 }
 ```
 
 ## Best Practices
 
-1. **Keep Server Components at the top level** — Fetch data as high as possible to minimize client-side dependencies
-2. **Compose strategically** — Use Server Components for data fetching; pass data to Client Components for interactivity
-3. **Avoid passing functions to Client Components** — Server-side functions can't serialize; use Server Actions instead
-4. **Use Server Actions for mutations** — Wrap database writes with `'use server'` directives for type-safe form handling
+1. **Keep server components by default** — Only add `'use client'` when you need interactivity
+2. **Pass serializable data** — Server components can pass objects to client components, but avoid functions
+3. **Avoid passing server secrets** to client components
+4. **Use streaming** with `<Suspense>` for better UX while data loads
+5. **Leverage async/await** directly in server components without loading states
 
-## Actionable Tip
+## Actionable Tips
 
-When building InfinitePay features, identify data dependencies early. If a component needs real-time interactivity, wrap only that portion in `'use client'` while keeping parent fetching logic server-side.
+- Profile your bundle size reduction using Next.js analytics
+- Gradually migrate existing pages to RSCs rather than a full rewrite
+- Use TypeScript generics for type-safe data passing between server and client components
 
 ## Resource
 
-[Next.js Server Components Deep Dive](https://nextjs.org/docs/app/building-your-application/rendering/server-components) — Official documentation with interactive examples and migration strategies.
+[Next.js Server Components Documentation](https://nextjs.org/docs/app/building-your-application/rendering/server-components) — Comprehensive guide with patterns and limitations.

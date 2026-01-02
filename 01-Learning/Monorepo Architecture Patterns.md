@@ -1,5 +1,5 @@
 ---
-created: 2025-12-17
+created: 2025-12-29
 tags: [learning, doc, programming, architecture, nextjs]
 ---
 
@@ -7,48 +7,55 @@ tags: [learning, doc, programming, architecture, nextjs]
 
 ## Key Concept
 
-A monorepo (monolithic repository) consolidates multiple related projects in a single version-controlled repository, ideal for payment platforms like InfinitePay where services must maintain consistency. The primary patterns are **workspace-based** (npm/yarn workspaces) and **task-based** (Turborepo/nx), which enable shared code, unified versioning, and coordinated deployments.
+A monorepo (single repository) containing multiple packages enables code sharing and atomic deployments across related services. For InfinitePay, this means payment processing logic, UI components, and utilities can be versioned together while remaining independently deployable.
+
+The **workspace pattern** (using npm/yarn workspaces or pnpm) allows each package to have its own `package.json`, dependencies, and build configuration while sharing a root-level lockfile.
 
 ## Practical Example
 
-For InfinitePay's payment processing, structure packages as:
-
-```
-packages/
-├── @infinitepay/core      # Shared payment logic, types
-├── @infinitepay/api       # Next.js API routes
-├── @infinitepay/dashboard # Next.js frontend app
-├── @infinitepay/ui        # Reusable React components
-└── @infinitepay/testing   # Shared test utilities
-```
-
-**tsconfig.json** paths enable seamless imports:
-```json
-{
-  "compilerOptions": {
-    "paths": {
-      "@infinitepay/core/*": ["packages/core/src/*"],
-      "@infinitepay/ui/*": ["packages/ui/src/*"]
-    }
+```typescript
+// packages/core/src/payment-processor.ts
+export class PaymentProcessor {
+  async processTransaction(amount: number) {
+    return { transactionId: crypto.randomUUID(), amount };
   }
 }
+
+// packages/web/src/pages/checkout.tsx
+import { PaymentProcessor } from '@infinitepay/core';
+
+export default function Checkout() {
+  const processor = new PaymentProcessor();
+  return <button onClick={() => processor.processTransaction(99.99)}>Pay</button>;
+}
+```
+
+**Monorepo structure:**
+```
+infinitepay/
+├── packages/
+│   ├── core/          # Business logic
+│   ├── web/           # Next.js app
+│   └── components/    # Shared UI
+├── pnpm-workspace.yaml
+└── tsconfig.base.json # Shared TypeScript config
 ```
 
 ## Best Practices
 
-1. **Clear boundaries**: Each package should have a single responsibility—types, components, API logic, or utilities
-2. **Dependency graph**: Use tools like `npm ls` or Turborepo's visualization to prevent circular dependencies
-3. **Shared types**: Keep TypeScript interfaces in `@infinitepay/core` to ensure consistency across payment operations
-4. **Version alignment**: Pin peer dependencies to prevent conflicts between dashboard and API
-5. **CI/CD optimization**: Use Turborepo caching to rebuild only affected packages on PRs
+1. **Clear boundaries**: Separate concerns (core logic, UI, API) into distinct packages
+2. **Shared configs**: Use `tsconfig.base.json` and `.eslintrc` at root level to enforce consistency
+3. **Version management**: Use workspace protocols (`workspace:*`) to reference local packages
+4. **Dependency isolation**: Each package explicitly declares its dependencies; avoid implicit reliance on root dependencies
+5. **Build order**: Leverage tools like `turborepo` or `nx` for efficient, cached builds
 
 ## Actionable Tips
 
-- Start with workspace setup before adding packages
-- Document each package's API surface clearly
-- Use consistent naming conventions (`@infinitepay/*`)
-- Implement pre-commit hooks to validate monorepo integrity
+- Use `pnpm` for superior disk space efficiency with hard linking
+- Implement pre-commit hooks to validate changes across affected packages
+- Document package purposes in README files within each package
+- Consider API boundaries between packages to prevent circular dependencies
 
 ## Resource
 
-[Turborepo Handbook](https://turbo.build/repo/docs) – Comprehensive guide on scaling monorepos with caching and task orchestration.
+**Monorepo.tools**: https://monorepo.tools/ — Comprehensive guide comparing monorepo strategies and tools with InfinitePay-relevant patterns for payment platforms.

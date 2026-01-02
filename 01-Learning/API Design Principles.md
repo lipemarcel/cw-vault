@@ -1,62 +1,59 @@
 ---
-created: 2025-12-07
-tags: [learning, doc, programming, api-design, nextjs]
+created: 2026-01-01
+tags: [learning, doc, programming, nextjs, api-design]
 ---
 
 # API Design Principles for Payment Systems
 
 ## Key Concept
 
-RESTful API design principles are critical for payment platforms like InfinitePay. The core idea is creating intuitive, predictable endpoints that use HTTP verbs correctly and return consistent response structures. This reduces integration friction and minimizes bugs in production payment flows.
+RESTful API design prioritizes clarity, consistency, and predictability. For payment systems like InfinitePay, this means structuring endpoints around resources (transactions, payments, customers) rather than actions, using standard HTTP methods semantically, and maintaining consistent response formats across all endpoints.
 
 ## Practical Example
 
-For InfinitePay transaction endpoints:
-
+Instead of:
 ```typescript
-// ❌ Poor: Unclear verbs and inconsistent responses
-GET /api/executeTransaction?id=123
-POST /api/getTransactionStatus
+// ❌ Action-oriented (poor)
+POST /api/processPayment
+POST /api/createTransaction
+GET /api/getPaymentStatus
+```
 
-// ✅ Better: RESTful, consistent, predictable
-GET /api/transactions/:id
-POST /api/transactions
-GET /api/transactions/:id/status
+Use:
+```typescript
+// ✅ Resource-oriented (good)
+POST /api/payments          // Create payment
+GET /api/payments/:id       // Retrieve payment
+PATCH /api/payments/:id     // Update payment
+GET /api/transactions       // List transactions
 
-// Response consistency
-interface TransactionResponse {
-  data: {
-    id: string;
-    amount: number;
-    status: 'pending' | 'completed' | 'failed';
-    timestamp: ISO8601;
-  };
-  meta: {
-    requestId: string;
-    timestamp: ISO8601;
-  };
+// Consistent response structure
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
   error?: {
     code: string;
     message: string;
   };
+  timestamp: string;
 }
 ```
 
-## Best Practices for Payment APIs
+## Best Practices for InfinitePay
 
-1. **Idempotency**: Always include `idempotency-key` headers for POST requests to prevent duplicate transactions
-2. **Versioning**: Use URL versioning (`/api/v1/`) for backward compatibility
-3. **Pagination**: Implement consistent cursor-based pagination for transaction lists
-4. **Error Codes**: Use standard HTTP status codes (400, 401, 422, 500) with semantic payment-specific codes
-5. **Rate Limiting**: Protect endpoints with clear rate limit headers
+1. **Version your API** (`/api/v1/`) to support backward compatibility during iterations
+2. **Use appropriate status codes**: 200 (success), 400 (bad request), 401 (unauthorized), 409 (conflict - duplicate transaction), 500 (server error)
+3. **Implement idempotency keys** for payment endpoints to prevent duplicate charges
+4. **Document request/response schemas** using OpenAPI/Swagger for clarity
+5. **Rate limiting** is critical—implement per-user/per-ip quotas for payment operations
+6. **Pagination for list endpoints** with `limit` and `offset` parameters
 
 ## Actionable Tips
 
-- Document all endpoints with OpenAPI/Swagger for team alignment
-- Use TypeScript interfaces to enforce request/response contracts
-- Implement middleware validation for payment data (amounts, currencies)
-- Test API contracts before frontend integration
+- Add a request ID header for tracing issues in payment flows
+- Always validate input before processing payments (amounts, currencies, customer data)
+- Return meaningful error messages without exposing sensitive details
 
 ## Resource
 
-[REST API Best Practices by JSON:API](https://jsonapi.org/) provides comprehensive standards for designing payment-safe APIs.
+**"RESTful API Design Rulebook" by Mark Masse** - Essential read covering idempotency, error handling, and security considerations specific to financial APIs.

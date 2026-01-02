@@ -1,64 +1,56 @@
 ---
-created: 2025-12-14
-tags: [learning, doc, programming, javascript, es2024]
+created: 2025-12-31
+tags: [learning, doc, programming, javascript, typescript]
 ---
 
-# JavaScript ES2024 Features for Modern Web Development
+# JavaScript ES2024 Features: Promise.withResolvers()
 
 ## Key Concept
 
-ES2024 introduces several powerful features that enhance developer productivity and code clarity. The most impactful for payment systems like InfinitePay are **Promise.withResolvers()**, **Array grouping methods**, and **improved error handling with cause chaining**.
+`Promise.withResolvers()` is a new ES2024 utility that simplifies promise creation by returning an object containing the promise itself plus its `resolve` and `reject` functions. This eliminates the need for the traditional Promise constructor pattern and makes code more readable and maintainable.
 
-## Practical Example: Payment Processing with Promise.withResolvers()
+## Problem It Solves
 
-Instead of wrapping promises in callbacks, ES2024 simplifies deferred promise patterns:
+Traditionally, working with promise resolvers required wrapping logic inside the constructor:
 
 ```typescript
-// Before ES2024
-function processPayment() {
-  return new Promise((resolve, reject) => {
-    handleTransaction().then(resolve).catch(reject);
-  });
-}
-
-// ES2024 - cleaner approach
-function processPayment() {
-  const { promise, resolve, reject } = Promise.withResolvers<PaymentResult>();
-  
-  handleTransaction()
-    .then(resolve)
-    .catch(reject);
-  
-  return promise;
-}
+// Old approach - verbose
+const promise = new Promise<string>((resolve, reject) => {
+  // logic here
+  resolve('value');
+});
 ```
 
-## Array Grouping for Transaction Analytics
-
-Group transactions by status for reporting:
+## Practical Example (Next.js/React Context)
 
 ```typescript
-const transactions = [...]; // PaymentTransaction[]
-const grouped = Object.groupBy(transactions, (tx) => tx.status);
-// Result: { pending: [...], completed: [...], failed: [...] }
-```
+// InfinitePay payment handler
+export function usePaymentProcess() {
+  const [promiseState, setPromiseState] = useState<{
+    promise: Promise<PaymentResult>;
+    resolve: (value: PaymentResult) => void;
+    reject: (reason?: any) => void;
+  } | null>(null);
 
-## Best Practices
+  const initPayment = async () => {
+    const { promise, resolve, reject } = Promise.withResolvers<PaymentResult>();
+    setPromiseState({ promise, resolve, reject });
+    
+    // Later, when payment webhook arrives:
+    // promiseState?.resolve({ status: 'success', transactionId: '123' });
+  };
 
-1. **Use Promise.withResolvers() for complex async flows** - reduces boilerplate in middleware and service layers
-2. **Leverage Array.prototype.group()** - simplifies data aggregation for analytics dashboards
-3. **Chain errors meaningfully** - use error `cause` for debugging payment failures:
-
-```typescript
-try {
-  await chargeCard(paymentInfo);
-} catch (error) {
-  throw new Error("Payment processing failed", { cause: error });
+  return { initPayment, promise: promiseState?.promise };
 }
 ```
 
-4. **Test with TypeScript strict mode** - ensure type safety with new features
+## Actionable Best Practices
 
-## Resource
+1. **Use for async flows**: Perfect for payment processing, webhooks, or event-driven architectures
+2. **Avoid over-usage**: Only use when you need external resolve/reject control—simple async operations don't need this
+3. **Type safety**: Always provide generic type parameter `Promise<T>` for TypeScript type checking
+4. **Error handling**: Remember to call `reject()` for error scenarios to prevent unhandled promise rejections
 
-[TC39 ES2024 Proposals](https://github.com/tc39/proposals/blob/main/finished-proposals.md) - Official specification and browser compatibility details for all finalized features.
+## Resource for Deeper Learning
+
+[MDN Web Docs: Promise.withResolvers()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers)

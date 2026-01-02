@@ -1,62 +1,54 @@
 ---
-created: 2025-12-03
+created: 2025-12-30
 tags: [learning, doc, programming, devops, nextjs]
 ---
 
-# CI/CD Strategies for Next.js Applications
+# CI/CD Strategies for Modern Web Applications
 
-## Key Concept: Pipeline Automation & Deployment Stages
+## Key Concept
 
-CI/CD (Continuous Integration/Continuous Deployment) automates testing, building, and deploying code changes. For InfinitePay, implementing a robust CI/CD pipeline reduces manual errors, accelerates releases, and ensures code quality gates before production.
+CI/CD (Continuous Integration/Continuous Deployment) automates testing, building, and deploying code changes. For payment systems like InfinitePay, this ensures reliability and fast iteration while maintaining security standards.
 
-A typical strategy involves three stages:
-1. **CI (Build & Test)**: Automated linting, type checking, unit/integration tests
-2. **Staging**: Deploy to staging environment for QA validation
-3. **CD (Production)**: Automated deployment after approval
+**Two core practices:**
+- **Continuous Integration**: Automatically test code on every commit
+- **Continuous Deployment**: Automatically deploy passing builds to production
 
-## Practical Example: GitHub Actions for Next.js
+## Practical Example with Next.js
+
+Consider a GitHub Actions workflow for InfinitePay:
 
 ```yaml
-name: Deploy InfinitePay
-on: [push, pull_request]
-
+name: Deploy
+on: [push]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
-      - run: npm ci
+      - run: npm install
       - run: npm run lint
-      - run: npm run type-check
       - run: npm run test
       - run: npm run build
-      
-      - name: Deploy to production
+      - name: Deploy to Production
         if: github.ref == 'refs/heads/main'
         run: npm run deploy
 ```
 
-## Best Practices
+This pipeline runs linting, tests, and builds on every push, then deploys only from the main branch.
 
-- **Branch Protection**: Require PR reviews and passing CI checks before merging to main
-- **Environment Parity**: Use identical Node versions, dependencies across environments
-- **Fail Fast**: Run quick linting/type checks before expensive tests
-- **Secrets Management**: Store API keys securely (use GitHub Secrets, never commit credentials)
-- **Atomic Deployments**: Deploy complete builds, never partial changes
-- **Rollback Strategy**: Maintain previous versions for quick rollback if issues arise
+## Actionable Best Practices
 
-## Actionable Tips
+1. **Stage deployments**: Use environments (staging → production) with approval gates for critical systems
+2. **Run tests first**: Never deploy code that fails tests
+3. **Environment parity**: Keep staging identical to production
+4. **Monitoring post-deploy**: Add health checks and rollback mechanisms
+5. **Secret management**: Use GitHub Secrets for API keys and database credentials—never commit them
 
-1. Add `next lint` and `tsc --noEmit` to CI before `next build`
-2. Use environment variables for API endpoints (dev/staging/prod)
-3. Implement automated performance testing in staging
-4. Cache node_modules to speed up builds
-5. Monitor deployment metrics post-release
+For payment systems, implement feature flags to safely deploy code without releasing features immediately.
 
 ## Resource
 
-**GitHub Actions Documentation for Next.js**: https://github.com/features/actions - Covers workflow automation, caching strategies, and deployment triggers specific to Node.js applications.
+**GitHub Actions Documentation**: https://docs.github.com/en/actions — Comprehensive guide for workflow automation with real payment processing examples.

@@ -1,5 +1,5 @@
 ---
-created: 2025-12-22
+created: 2025-12-28
 tags: [learning, doc, programming, git, collaboration]
 ---
 
@@ -7,48 +7,42 @@ tags: [learning, doc, programming, git, collaboration]
 
 ## Key Concept
 
-A well-structured Git workflow ensures code quality, prevents conflicts, and maintains a clean project history. The **Git Flow** and **trunk-based development** patterns are two popular approaches for teams. Git Flow uses feature branches with dedicated release/hotfix branches, while trunk-based development keeps changes small and integrates to main frequently.
+A robust git workflow ensures code quality, team coordination, and deployment safety. The **trunk-based development** with feature branches is ideal for teams building payment systems like InfinitePay, where stability is critical.
 
-## Practical Example for InfinitePay
+## The Pattern
 
-When implementing a payment feature in Next.js:
+Instead of long-lived branches, create short-lived feature branches from `main`, integrate frequently through pull requests, and maintain strict code review standards. This reduces merge conflicts and catches issues early.
 
-```bash
-# Create feature branch from main
-git checkout -b feature/payment-gateway-integration
+```typescript
+// Feature branch workflow
+// 1. Create feature branch
+git checkout -b feat/payment-validation
 
-# Make commits with clear messages
-git commit -m "feat: add Stripe integration service"
-git commit -m "test: add payment gateway tests"
+// 2. Commit with meaningful messages
+git commit -m "feat: add card validation logic for payment processing"
 
-# Push and create Pull Request
-git push origin feature/payment-gateway-integration
+// 3. Push and create PR
+git push origin feat/payment-validation
+
+// 4. After review and CI passes, squash merge to main
+git checkout main && git pull origin main
+git merge --squash feat/payment-validation
+git commit -m "feat: add card validation logic"
 ```
-
-In your PR, include:
-- Description of changes
-- Related issue number
-- Testing checklist
-- Screenshots if UI changes
 
 ## Actionable Tips
 
-1. **Use conventional commits** (`feat:`, `fix:`, `test:`) for automated changelog generation
-2. **Keep branches short-lived** (max 3-5 days) to reduce merge conflicts
-3. **Require code reviews** before merging—at least one approval from team members
-4. **Write atomic commits** that represent logical units of work
-5. **Protect main branch** with status checks (tests, linting) before merging
-6. **Squash commits** on merge to keep history clean
+- **Commit frequently**: Small, logical commits make reviews easier and history clearer
+- **Write descriptive PR titles**: Use conventional commits (feat:, fix:, docs:) for consistency
+- **Require CI checks**: Ensure tests and linting pass before merging
+- **Delete merged branches**: Keep repository clean with automated cleanup
+- **Use branch protection rules**: Require reviews and status checks on `main`
+- **Protect sensitive data**: Never commit API keys or credentials—use environment variables
 
-## Best Practice for InfinitePay Team
+## Best Practice for Payment Systems
 
-Enforce a branch naming convention:
-- `feature/payment-validation`
-- `fix/transaction-timeout-bug`
-- `docs/api-authentication-guide`
-
-This makes it easier to track work and automate deployments.
+In fintech applications, enforce a minimum of two approvals for payment-related changes and maintain an audit trail of all deployments.
 
 ## Resource
 
-**Learn more:** [Atlassian Git Workflow Tutorial](https://www.atlassian.com/git/tutorials/comparing-workflows)
+[Git Team Collaboration Patterns](https://www.atlassian.com/git/tutorials/comparing-workflows) - Comprehensive guide covering multiple workflow strategies with visual examples.
